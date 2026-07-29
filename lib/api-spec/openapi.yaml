@@ -1,0 +1,842 @@
+openapi: 3.1.0
+info:
+  title: RCOS API
+  version: 0.1.0
+  description: |
+    Restaurant Compliance OS — REST API.
+
+    All responses use the envelope `{ success, data, meta? }` on success or
+    `{ success: false, error: { code, message: { ar, en }, details? } }` on failure.
+
+    All endpoints under `/companies`, `/brands`, `/branches`, `/users`,
+    `/departments`, `/org-levels` require a Bearer access token; tenant is
+    derived from the JWT and enforced server-side.
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Local dev
+  - url: /api/v1
+    description: Same-origin
+
+tags:
+  - name: Auth
+  - name: Companies
+  - name: Brands
+  - name: Branches
+  - name: Users
+  - name: Roles
+  - name: Departments
+  - name: Org Levels
+  - name: Health
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      security: []
+      summary: Liveness check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      status: { type: string, example: ok }
+                      ts:    { type: string, format: date-time }
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Log in with email + password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:    { type: string, format: email }
+                password: { type: string, minLength: 1 }
+      responses:
+        '200':
+          description: Tokens + user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Rotate refresh token → new access + refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200':
+          description: New tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/TokenBundle' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Revoke refresh token (or all sessions for the current user)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OkEnvelope' }
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Current user profile + roles
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/CurrentUser' }
+
+  /companies/me:
+    get:
+      tags: [Companies]
+      summary: Get the current company
+      responses:
+        '200':
+          description: Company
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Company' }
+    patch:
+      tags: [Companies]
+      summary: Update the current company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CompanyPatch' }
+      responses:
+        '200':
+          description: Updated company
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Company' }
+
+  /brands:
+    get:
+      tags: [Brands]
+      summary: List brands
+      responses:
+        '200':
+          description: Brands
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Brand' }
+    post:
+      tags: [Brands]
+      summary: Create a brand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BrandInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Brand' }
+
+  /brands/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    patch:
+      tags: [Brands]
+      summary: Update a brand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BrandInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Brand' }
+    delete:
+      tags: [Brands]
+      summary: Soft-delete a brand
+      responses:
+        '204': { description: Deleted }
+
+  /branches:
+    get:
+      tags: [Branches]
+      summary: List branches
+      responses:
+        '200':
+          description: Branches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Branch' }
+    post:
+      tags: [Branches]
+      summary: Create a branch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BranchInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Branch' }
+
+  /branches/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      tags: [Branches]
+      summary: Get a branch
+      responses:
+        '200':
+          description: Branch
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Branch' }
+    patch:
+      tags: [Branches]
+      summary: Update a branch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BranchInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Branch' }
+    delete:
+      tags: [Branches]
+      summary: Soft-delete a branch
+      responses:
+        '204': { description: Deleted }
+
+  /users:
+    get:
+      tags: [Users]
+      summary: List users
+      responses:
+        '200':
+          description: Users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/UserSummary' }
+    post:
+      tags: [Users]
+      summary: Invite / create a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/UserSummary' }
+
+  /users/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    patch:
+      tags: [Users]
+      summary: Update a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserPatch' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/UserSummary' }
+    delete:
+      tags: [Users]
+      summary: Soft-delete a user
+      responses:
+        '204': { description: Deleted }
+
+  /roles:
+    get:
+      tags: [Roles]
+      summary: List roles (system + company-defined)
+      responses:
+        '200':
+          description: Roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Role' }
+
+  /roles/permissions:
+    get:
+      tags: [Roles]
+      summary: List every permission in the catalog
+      responses:
+        '200':
+          description: Permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Permission' }
+
+  /roles/{id}/permissions:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      tags: [Roles]
+      summary: Permissions granted to a role
+      responses:
+        '200':
+          description: Permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Permission' }
+
+  /departments:
+    get:
+      tags: [Departments]
+      responses:
+        '200':
+          description: Departments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Department' }
+    post:
+      tags: [Departments]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DepartmentInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Department' }
+
+  /departments/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    patch:
+      tags: [Departments]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DepartmentInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/Department' }
+    delete:
+      tags: [Departments]
+      responses:
+        '204': { description: Deleted }
+
+  /org-levels:
+    get:
+      tags: [Org Levels]
+      responses:
+        '200':
+          description: Org levels
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/OrgLevel' }
+    post:
+      tags: [Org Levels]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrgLevelInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/OrgLevel' }
+
+  /org-levels/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    patch:
+      tags: [Org Levels]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrgLevelInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:    { $ref: '#/components/schemas/OrgLevel' }
+    delete:
+      tags: [Org Levels]
+      responses:
+        '204': { description: Deleted }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid credentials
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  schemas:
+    OkEnvelope:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data:    { type: object }
+
+    ErrorEnvelope:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        error:
+          type: object
+          properties:
+            code:    { type: string }
+            message:
+              type: object
+              properties:
+                ar: { type: string }
+                en: { type: string }
+            details: {}
+
+    BilingualString:
+      type: object
+      properties:
+        ar: { type: string }
+        en: { type: string }
+
+    TokenBundle:
+      type: object
+      properties:
+        accessToken:            { type: string }
+        accessTokenExpiresIn:   { type: integer }
+        refreshToken:           { type: string }
+        refreshTokenExpiresAt:  { type: string, format: date-time }
+        roles:
+          type: array
+          items: { type: string }
+
+    LoginResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        data:
+          allOf:
+            - $ref: '#/components/schemas/TokenBundle'
+            - type: object
+              properties:
+                user: { $ref: '#/components/schemas/CurrentUser' }
+
+    CurrentUser:
+      type: object
+      properties:
+        id:              { type: string, format: uuid }
+        email:           { type: string, format: email }
+        fullNameAr:      { type: string }
+        fullNameEn:      { type: string }
+        preferredLocale: { type: string, enum: [ar, en] }
+        avatarUrl:       { type: [string, 'null'] }
+        companyId:       { type: string, format: uuid }
+        branchIds:
+          type: array
+          items: { type: string, format: uuid }
+        roles:
+          type: array
+          items: { type: string }
+
+    Company:
+      type: object
+      properties:
+        id:                     { type: string, format: uuid }
+        slug:                   { type: string }
+        nameAr:                 { type: string }
+        nameEn:                 { type: string }
+        commercialRegistration: { type: [string, 'null'] }
+        vatNumber:              { type: [string, 'null'] }
+        country:                { type: string }
+        defaultLocale:          { type: string, enum: [ar, en] }
+        timezone:               { type: string }
+        status:                 { type: string, enum: [trial, active, suspended, archived] }
+        logoUrl:                { type: [string, 'null'] }
+        enabledModules:
+          type: array
+          items: { type: string }
+        settings:               { type: object, additionalProperties: true }
+        createdAt:              { type: string, format: date-time }
+        updatedAt:              { type: string, format: date-time }
+
+    CompanyPatch:
+      type: object
+      properties:
+        nameAr:                 { type: string }
+        nameEn:                 { type: string }
+        commercialRegistration: { type: [string, 'null'] }
+        vatNumber:              { type: [string, 'null'] }
+        defaultLocale:          { type: string, enum: [ar, en] }
+        timezone:               { type: string }
+        logoUrl:                { type: [string, 'null'] }
+        settings:               { type: object, additionalProperties: true }
+
+    Brand:
+      type: object
+      properties:
+        id:          { type: string, format: uuid }
+        companyId:   { type: string, format: uuid }
+        nameAr:      { type: string }
+        nameEn:      { type: string }
+        slug:        { type: string }
+        logoUrl:     { type: [string, 'null'] }
+        description: { type: [string, 'null'] }
+        createdAt:   { type: string, format: date-time }
+        updatedAt:   { type: string, format: date-time }
+
+    BrandInput:
+      type: object
+      properties:
+        nameAr:      { type: string }
+        nameEn:      { type: string }
+        slug:        { type: string }
+        logoUrl:     { type: [string, 'null'] }
+        description: { type: [string, 'null'] }
+
+    Branch:
+      type: object
+      properties:
+        id:                            { type: string, format: uuid }
+        companyId:                     { type: string, format: uuid }
+        brandId:                       { type: [string, 'null'], format: uuid }
+        code:                          { type: string }
+        nameAr:                        { type: string }
+        nameEn:                        { type: string }
+        restaurantType:
+          type: string
+          enum: [fast_food, casual_dining, fine_dining, shawarma, bakery, coffee_shop, buffet, cloud_kitchen, catering, other]
+        status:
+          type: string
+          enum: [active, inactive, closed_for_renovation, permanently_closed]
+        city:                          { type: string }
+        region:                        { type: [string, 'null'] }
+        addressLine:                   { type: [string, 'null'] }
+        latitude:                      { type: [string, 'null'] }
+        longitude:                     { type: [string, 'null'] }
+        municipalityLicenseNumber:     { type: [string, 'null'] }
+        municipalityLicenseExpiryDate: { type: [string, 'null'] }
+        seatingCapacity:               { type: [integer, 'null'] }
+        staffHeadcount:                { type: [integer, 'null'] }
+        createdAt:                     { type: string, format: date-time }
+        updatedAt:                     { type: string, format: date-time }
+
+    BranchInput:
+      type: object
+      properties:
+        brandId:                       { type: [string, 'null'], format: uuid }
+        code:                          { type: string }
+        nameAr:                        { type: string }
+        nameEn:                        { type: string }
+        restaurantType:
+          type: string
+          enum: [fast_food, casual_dining, fine_dining, shawarma, bakery, coffee_shop, buffet, cloud_kitchen, catering, other]
+        status:
+          type: string
+          enum: [active, inactive, closed_for_renovation, permanently_closed]
+        city:                          { type: string }
+        region:                        { type: [string, 'null'] }
+        addressLine:                   { type: [string, 'null'] }
+        latitude:                      { type: [number, 'null'] }
+        longitude:                     { type: [number, 'null'] }
+        municipalityLicenseNumber:     { type: [string, 'null'] }
+        municipalityLicenseExpiryDate: { type: [string, 'null'] }
+        seatingCapacity:               { type: [integer, 'null'] }
+        staffHeadcount:                { type: [integer, 'null'] }
+
+    UserSummary:
+      type: object
+      properties:
+        id:              { type: string, format: uuid }
+        email:           { type: string, format: email }
+        phone:           { type: [string, 'null'] }
+        fullNameAr:      { type: string }
+        fullNameEn:      { type: string }
+        preferredLocale: { type: string, enum: [ar, en] }
+        status:          { type: string, enum: [active, invited, suspended, deactivated] }
+        branchIds:
+          type: array
+          items: { type: string, format: uuid }
+        departmentId:    { type: [string, 'null'], format: uuid }
+        avatarUrl:       { type: [string, 'null'] }
+        lastLoginAt:     { type: [string, 'null'], format: date-time }
+        createdAt:       { type: string, format: date-time }
+
+    UserInput:
+      type: object
+      required: [email, password, fullNameAr, fullNameEn, roleKeys]
+      properties:
+        email:           { type: string, format: email }
+        password:        { type: string, minLength: 8 }
+        fullNameAr:      { type: string }
+        fullNameEn:      { type: string }
+        phone:           { type: [string, 'null'] }
+        preferredLocale: { type: string, enum: [ar, en] }
+        branchIds:
+          type: array
+          items: { type: string, format: uuid }
+        departmentId:    { type: [string, 'null'], format: uuid }
+        roleKeys:
+          type: array
+          items: { type: string }
+
+    UserPatch:
+      type: object
+      properties:
+        fullNameAr:      { type: string }
+        fullNameEn:      { type: string }
+        phone:           { type: [string, 'null'] }
+        preferredLocale: { type: string, enum: [ar, en] }
+        branchIds:
+          type: array
+          items: { type: string, format: uuid }
+        departmentId:    { type: [string, 'null'], format: uuid }
+        status:          { type: string, enum: [active, invited, suspended, deactivated] }
+        avatarUrl:       { type: [string, 'null'] }
+
+    Role:
+      type: object
+      properties:
+        id:          { type: string, format: uuid }
+        companyId:   { type: [string, 'null'], format: uuid }
+        key:         { type: string }
+        nameAr:      { type: string }
+        nameEn:      { type: string }
+        description: { type: [string, 'null'] }
+        isSystem:    { type: boolean }
+        priority:    { type: string }
+        createdAt:   { type: string, format: date-time }
+
+    Permission:
+      type: object
+      properties:
+        id:     { type: string, format: uuid }
+        key:    { type: string, description: "module:action" }
+        module: { type: string }
+        action: { type: string }
+
+    Department:
+      type: object
+      properties:
+        id:        { type: string, format: uuid }
+        companyId: { type: string, format: uuid }
+        nameAr:    { type: string }
+        nameEn:    { type: string }
+        code:      { type: [string, 'null'] }
+        createdAt: { type: string, format: date-time }
+
+    DepartmentInput:
+      type: object
+      required: [nameAr, nameEn]
+      properties:
+        nameAr: { type: string }
+        nameEn: { type: string }
+        code:   { type: [string, 'null'] }
+
+    OrgLevel:
+      type: object
+      properties:
+        id:            { type: string, format: uuid }
+        companyId:     { type: string, format: uuid }
+        depth:         { type: integer }
+        nameAr:        { type: string }
+        nameEn:        { type: string }
+        parentLevelId: { type: [string, 'null'], format: uuid }
+        createdAt:     { type: string, format: date-time }
+
+    OrgLevelInput:
+      type: object
+      required: [depth, nameAr, nameEn]
+      properties:
+        depth:         { type: integer, minimum: 0, maximum: 10 }
+        nameAr:        { type: string }
+        nameEn:        { type: string }
+        parentLevelId: { type: [string, 'null'], format: uuid }

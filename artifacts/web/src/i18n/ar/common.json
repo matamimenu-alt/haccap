@@ -1,0 +1,117 @@
+{
+  "app": {
+    "name": "منصة الامتثال للمطاعم",
+    "shortName": "RCOS",
+    "tagline": "امتثال البلديات، الهاسب، وسلامة الغذاء — للمطاعم في المملكة"
+  },
+  "actions": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "add": "إضافة",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "search": "بحث",
+    "switchLanguage": "English"
+  },
+  "auth": {
+    "welcome": "مرحبًا بعودتك",
+    "signInHint": "سجّل الدخول لإدارة عمليات الامتثال في مطاعمك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "invalid": "بيانات الاعتماد غير صحيحة",
+    "demoCredentials": "بيانات الدخول التجريبية"
+  },
+  "nav": {
+    "dashboard": "الرئيسية",
+    "organization": "المنظمة",
+    "companies": "الشركات",
+    "brands": "العلامات التجارية",
+    "branches": "الفروع",
+    "users": "المستخدمون",
+    "roles": "الأدوار والصلاحيات",
+    "departments": "الأقسام",
+    "orgLevels": "الهيكل التنظيمي",
+    "compliance": "الامتثال",
+    "haccp": "الهاسب",
+    "foodSafety": "سلامة الغذاء",
+    "tasks": "المهام",
+    "capa": "الإجراءات التصحيحية",
+    "reports": "التقارير",
+    "settings": "الإعدادات"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "أهلاً {{name}}",
+    "stats": {
+      "branches": "الفروع",
+      "activeUsers": "المستخدمون",
+      "brands": "العلامات التجارية",
+      "openViolations": "المخالفات المفتوحة"
+    },
+    "phase1Notice": "أنت الآن في مرحلة الأساس (Phase 1). ستُفعّل وحدات الامتثال والهاسب والمهام في المراحل التالية."
+  },
+  "branches": {
+    "title": "الفروع",
+    "add": "إضافة فرع",
+    "code": "الرمز",
+    "name": "الاسم",
+    "city": "المدينة",
+    "type": "نوع المطعم",
+    "status": "الحالة"
+  },
+  "brands": {
+    "title": "العلامات التجارية",
+    "add": "إضافة علامة",
+    "slug": "المعرّف",
+    "description": "الوصف"
+  },
+  "users": {
+    "title": "المستخدمون",
+    "add": "إضافة مستخدم",
+    "email": "البريد",
+    "fullName": "الاسم",
+    "role": "الدور",
+    "status": "الحالة",
+    "lastLogin": "آخر دخول"
+  },
+  "roles": {
+    "platform_super_admin": "مسؤول عام للمنصة",
+    "company_owner": "مالك الشركة",
+    "operations_director": "مدير العمليات",
+    "area_manager": "مدير منطقة",
+    "branch_manager": "مدير فرع",
+    "food_safety_officer": "مسؤول سلامة الغذاء",
+    "internal_auditor": "مدقق داخلي",
+    "supervisor": "مشرف",
+    "inspector": "مفتش",
+    "employee": "موظف"
+  },
+  "restaurantType": {
+    "fast_food": "وجبات سريعة",
+    "casual_dining": "مطعم عائلي",
+    "fine_dining": "مطعم فاخر",
+    "shawarma": "شاورما",
+    "bakery": "مخبز",
+    "coffee_shop": "مقهى",
+    "buffet": "بوفيه",
+    "cloud_kitchen": "مطبخ سحابي",
+    "catering": "تموين",
+    "other": "أخرى"
+  },
+  "status": {
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "closed_for_renovation": "مغلق للتجديد",
+    "permanently_closed": "مغلق نهائياً",
+    "invited": "مدعو",
+    "suspended": "موقوف",
+    "deactivated": "معطل"
+  },
+  "common": {
+    "empty": "لا توجد سجلات بعد",
+    "loading": "جاري التحميل…",
+    "error": "حدث خطأ"
+  }
+}

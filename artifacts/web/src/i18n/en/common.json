@@ -1,0 +1,117 @@
+{
+  "app": {
+    "name": "Restaurant Compliance OS",
+    "shortName": "RCOS",
+    "tagline": "Municipality compliance, HACCP, and food safety for Saudi restaurant chains"
+  },
+  "actions": {
+    "login": "Sign in",
+    "logout": "Sign out",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "switchLanguage": "العربية"
+  },
+  "auth": {
+    "welcome": "Welcome back",
+    "signInHint": "Sign in to manage compliance across your restaurants",
+    "email": "Email",
+    "password": "Password",
+    "invalid": "Invalid credentials",
+    "demoCredentials": "Demo credentials"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "organization": "Organization",
+    "companies": "Companies",
+    "brands": "Brands",
+    "branches": "Branches",
+    "users": "Users",
+    "roles": "Roles & permissions",
+    "departments": "Departments",
+    "orgLevels": "Org hierarchy",
+    "compliance": "Compliance",
+    "haccp": "HACCP",
+    "foodSafety": "Food safety",
+    "tasks": "Tasks",
+    "capa": "CAPA",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {{name}}",
+    "stats": {
+      "branches": "Branches",
+      "activeUsers": "Users",
+      "brands": "Brands",
+      "openViolations": "Open violations"
+    },
+    "phase1Notice": "You're in Phase 1 (Foundation). Compliance, HACCP, and task modules light up in later phases."
+  },
+  "branches": {
+    "title": "Branches",
+    "add": "Add branch",
+    "code": "Code",
+    "name": "Name",
+    "city": "City",
+    "type": "Restaurant type",
+    "status": "Status"
+  },
+  "brands": {
+    "title": "Brands",
+    "add": "Add brand",
+    "slug": "Slug",
+    "description": "Description"
+  },
+  "users": {
+    "title": "Users",
+    "add": "Add user",
+    "email": "Email",
+    "fullName": "Full name",
+    "role": "Role",
+    "status": "Status",
+    "lastLogin": "Last login"
+  },
+  "roles": {
+    "platform_super_admin": "Platform Super Admin",
+    "company_owner": "Company Owner",
+    "operations_director": "Operations Director",
+    "area_manager": "Area Manager",
+    "branch_manager": "Branch Manager",
+    "food_safety_officer": "Food Safety Officer",
+    "internal_auditor": "Internal Auditor",
+    "supervisor": "Supervisor",
+    "inspector": "Inspector",
+    "employee": "Employee"
+  },
+  "restaurantType": {
+    "fast_food": "Fast food",
+    "casual_dining": "Casual dining",
+    "fine_dining": "Fine dining",
+    "shawarma": "Shawarma",
+    "bakery": "Bakery",
+    "coffee_shop": "Coffee shop",
+    "buffet": "Buffet",
+    "cloud_kitchen": "Cloud kitchen",
+    "catering": "Catering",
+    "other": "Other"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "closed_for_renovation": "Closed for renovation",
+    "permanently_closed": "Permanently closed",
+    "invited": "Invited",
+    "suspended": "Suspended",
+    "deactivated": "Deactivated"
+  },
+  "common": {
+    "empty": "No records yet",
+    "loading": "Loading…",
+    "error": "Something went wrong"
+  }
+}
