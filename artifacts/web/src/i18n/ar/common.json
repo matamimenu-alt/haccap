@@ -33,6 +33,12 @@
     "roles": "الأدوار والصلاحيات",
     "departments": "الأقسام",
     "orgLevels": "الهيكل التنظيمي",
+    "operations": "العمليات",
+    "assets": "الأصول",
+    "areas": "المناطق",
+    "assetCategories": "تصنيفات الأصول",
+    "suppliers": "الموردون",
+    "maintenance": "الصيانة",
     "compliance": "الامتثال",
     "haccp": "الهاسب",
     "foodSafety": "سلامة الغذاء",
@@ -40,6 +46,83 @@
     "capa": "الإجراءات التصحيحية",
     "reports": "التقارير",
     "settings": "الإعدادات"
+  },
+  "assets": {
+    "title": "الأصول",
+    "add": "إضافة أصل",
+    "code": "الرمز",
+    "name": "الاسم",
+    "kind": "النوع",
+    "category": "التصنيف",
+    "area": "المنطقة",
+    "branch": "الفرع",
+    "manufacturer": "الصانع",
+    "model": "الموديل",
+    "serial": "الرقم التسلسلي",
+    "supplier": "المورد",
+    "purchaseDate": "تاريخ الشراء",
+    "purchaseCost": "قيمة الشراء",
+    "installedDate": "تاريخ التركيب",
+    "spec": "المواصفات",
+    "history": "السجل",
+    "warranties": "الضمانات",
+    "documents": "المستندات",
+    "photos": "الصور",
+    "maintenanceTab": "الصيانة",
+    "overview": "نظرة عامة",
+    "empty": "لا توجد أصول بعد",
+    "emptyHint": "أضف أصلًا لبدء تتبع دورة حياته والصيانة والمخاطر.",
+    "decommission": "إخراج من الخدمة",
+    "reprintQr": "إعادة طباعة رمز QR",
+    "status": {
+      "operational": "يعمل",
+      "needs_repair": "يحتاج إصلاح",
+      "under_maintenance": "تحت الصيانة",
+      "out_of_service": "خارج الخدمة",
+      "in_storage": "في المخزن",
+      "decommissioned": "خارج التشغيل"
+    },
+    "criticality": {
+      "low": "منخفض",
+      "medium": "متوسط",
+      "high": "مرتفع",
+      "critical": "حرج"
+    }
+  },
+  "areas": {
+    "title": "المناطق",
+    "add": "إضافة منطقة",
+    "kind": {
+      "kitchen": "المطبخ",
+      "cook_line": "خط الطهي",
+      "prep": "التحضير",
+      "dishwash": "غسيل الصحون",
+      "cold_storage": "تبريد",
+      "freezer": "تجميد",
+      "dry_storage": "تخزين جاف",
+      "receiving": "الاستلام",
+      "waste": "النفايات",
+      "mechanical": "غرفة الميكانيكا",
+      "dining": "صالة الطعام",
+      "restroom": "دورة المياه",
+      "office": "المكتب",
+      "front_of_house": "الواجهة",
+      "outdoor": "خارجي",
+      "other": "أخرى"
+    }
+  },
+  "suppliers": {
+    "title": "الموردون",
+    "add": "إضافة مورد",
+    "preferred": "مفضل",
+    "categories": "الفئات"
+  },
+  "maintenanceTab": {
+    "title": "خطط الصيانة",
+    "upcoming": "القادم خلال 30 يومًا"
+  },
+  "operations": {
+    "welcomeCard": "المرحلة 2 — العمليات الأساسية. جميع الوحدات القادمة (المهام، التفتيش، الهاسب، البلدية) تعتمد على قاعدة الأصول هذه."
   },
   "dashboard": {
     "title": "لوحة التحكم",

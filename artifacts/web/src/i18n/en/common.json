@@ -33,6 +33,12 @@
     "roles": "Roles & permissions",
     "departments": "Departments",
     "orgLevels": "Org hierarchy",
+    "operations": "Operations",
+    "assets": "Assets",
+    "areas": "Areas",
+    "assetCategories": "Asset categories",
+    "suppliers": "Suppliers",
+    "maintenance": "Maintenance",
     "compliance": "Compliance",
     "haccp": "HACCP",
     "foodSafety": "Food safety",
@@ -40,6 +46,83 @@
     "capa": "CAPA",
     "reports": "Reports",
     "settings": "Settings"
+  },
+  "assets": {
+    "title": "Assets",
+    "add": "Add asset",
+    "code": "Code",
+    "name": "Name",
+    "kind": "Kind",
+    "category": "Category",
+    "area": "Area",
+    "branch": "Branch",
+    "manufacturer": "Manufacturer",
+    "model": "Model",
+    "serial": "Serial number",
+    "supplier": "Supplier",
+    "purchaseDate": "Purchase date",
+    "purchaseCost": "Purchase cost",
+    "installedDate": "Installed date",
+    "spec": "Specification",
+    "history": "History",
+    "warranties": "Warranties",
+    "documents": "Documents",
+    "photos": "Photos",
+    "maintenanceTab": "Maintenance",
+    "overview": "Overview",
+    "empty": "No assets yet",
+    "emptyHint": "Add your first asset to start tracking lifecycle, maintenance, and risk.",
+    "decommission": "Decommission",
+    "reprintQr": "Reprint QR",
+    "status": {
+      "operational": "Operational",
+      "needs_repair": "Needs repair",
+      "under_maintenance": "Under maintenance",
+      "out_of_service": "Out of service",
+      "in_storage": "In storage",
+      "decommissioned": "Decommissioned"
+    },
+    "criticality": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "areas": {
+    "title": "Areas",
+    "add": "Add area",
+    "kind": {
+      "kitchen": "Kitchen",
+      "cook_line": "Cook line",
+      "prep": "Prep",
+      "dishwash": "Dishwash",
+      "cold_storage": "Cold storage",
+      "freezer": "Freezer",
+      "dry_storage": "Dry storage",
+      "receiving": "Receiving",
+      "waste": "Waste",
+      "mechanical": "Mechanical",
+      "dining": "Dining",
+      "restroom": "Restroom",
+      "office": "Office",
+      "front_of_house": "Front of house",
+      "outdoor": "Outdoor",
+      "other": "Other"
+    }
+  },
+  "suppliers": {
+    "title": "Suppliers",
+    "add": "Add supplier",
+    "preferred": "Preferred",
+    "categories": "Categories"
+  },
+  "maintenanceTab": {
+    "title": "Maintenance schedules",
+    "upcoming": "Due within 30 days"
+  },
+  "operations": {
+    "welcomeCard": "Phase 2 — Operations Core. Every downstream module (tasks, inspections, HACCP, municipality) hangs off this asset layer."
   },
   "dashboard": {
     "title": "Dashboard",

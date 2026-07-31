@@ -11,6 +11,15 @@ import { UsersPage } from '@/pages/organization/UsersPage';
 import { RolesPage } from '@/pages/organization/RolesPage';
 import { DepartmentsPage } from '@/pages/organization/DepartmentsPage';
 import { OrgLevelsPage } from '@/pages/organization/OrgLevelsPage';
+// Phase 2 — Operations Core
+import { AssetsPage } from '@/pages/operations/AssetsPage';
+import { AssetDetailPage } from '@/pages/operations/AssetDetailPage';
+import { AssetNewPage } from '@/pages/operations/AssetNewPage';
+import { AreasPage } from '@/pages/operations/AreasPage';
+import { AssetCategoriesPage } from '@/pages/operations/AssetCategoriesPage';
+import { SuppliersPage } from '@/pages/operations/SuppliersPage';
+import { MaintenancePage } from '@/pages/operations/MaintenancePage';
+import { QrScanPage } from '@/pages/operations/QrScanPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +52,15 @@ export default function App() {
             <Route path="/organization/roles" element={<RolesPage />} />
             <Route path="/organization/departments" element={<DepartmentsPage />} />
             <Route path="/organization/org-levels" element={<OrgLevelsPage />} />
+            {/* Phase 2 — Operations Core */}
+            <Route path="/operations/assets" element={<AssetsPage />} />
+            <Route path="/operations/assets/new" element={<AssetNewPage />} />
+            <Route path="/operations/assets/:id" element={<AssetDetailPage />} />
+            <Route path="/operations/areas" element={<AreasPage />} />
+            <Route path="/operations/asset-categories" element={<AssetCategoriesPage />} />
+            <Route path="/operations/suppliers" element={<SuppliersPage />} />
+            <Route path="/operations/maintenance" element={<MaintenancePage />} />
+            <Route path="/s/:token" element={<QrScanPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

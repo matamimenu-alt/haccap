@@ -11,6 +11,15 @@ const schema = z.object({
   JWT_ACCESS_TTL: z.string().default('15m'),
   JWT_REFRESH_TTL: z.string().default('30d'),
   WEB_ORIGIN: z.string().default('http://localhost:5173'),
+  // Storage
+  STORAGE_DRIVER: z.string().default('local'),
+  STORAGE_LOCAL_PATH: z.string().default('./storage'),
+  STORAGE_PUBLIC_BASE_URL: z.string().default('http://localhost:3001/api/v1/attachments/blob'),
+  STORAGE_SIGNING_SECRET: z.string().min(16),
+  // Upload
+  MAX_UPLOAD_MB: z.coerce.number().int().positive().default(25),
+  // QR
+  QR_SCAN_BASE_URL: z.string().default('http://localhost:5173/s'),
 });
 
 const parsed = schema.safeParse(process.env);

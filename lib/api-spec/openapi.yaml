@@ -27,6 +27,15 @@ tags:
   - name: Departments
   - name: Org Levels
   - name: Health
+  # Phase 2 — Operations Core
+  - name: Areas
+  - name: Asset Categories
+  - name: Suppliers
+  - name: Assets
+  - name: Asset Tags
+  - name: Attachments
+  - name: Maintenance Schedules
+  - name: QR
 
 security:
   - bearerAuth: []
@@ -539,6 +548,573 @@ paths:
       responses:
         '204': { description: Deleted }
 
+  # ============================================================
+  # Phase 2 — Operations Core
+  # ============================================================
+
+  /areas:
+    get:
+      tags: [Areas]
+      summary: List areas (optionally scoped to a branch)
+      parameters:
+        - in: query
+          name: branchId
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Areas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/Area' } }
+    post:
+      tags: [Areas]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AreaInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Area' }
+  /areas/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    patch:
+      tags: [Areas]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AreaInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Area' }
+    delete:
+      tags: [Areas]
+      responses:
+        '204': { description: Deleted }
+
+  /asset-categories:
+    get:
+      tags: [Asset Categories]
+      responses:
+        '200':
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/AssetCategory' } }
+    post:
+      tags: [Asset Categories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AssetCategoryInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/AssetCategory' }
+  /asset-categories/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    patch:
+      tags: [Asset Categories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AssetCategoryInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/AssetCategory' }
+    delete:
+      tags: [Asset Categories]
+      responses:
+        '204': { description: Deleted }
+
+  /suppliers:
+    get:
+      tags: [Suppliers]
+      responses:
+        '200':
+          description: Suppliers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/Supplier' } }
+    post:
+      tags: [Suppliers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SupplierInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Supplier' }
+  /suppliers/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      tags: [Suppliers]
+      responses:
+        '200':
+          description: Supplier + contacts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/SupplierWithContacts' }
+    patch:
+      tags: [Suppliers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SupplierInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Supplier' }
+    delete:
+      tags: [Suppliers]
+      responses:
+        '204': { description: Deleted }
+  /suppliers/{id}/contacts:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    post:
+      tags: [Suppliers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SupplierContactInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/SupplierContact' }
+
+  /assets:
+    get:
+      tags: [Assets]
+      summary: List assets with filters + pagination
+      parameters:
+        - { in: query, name: branchId,    schema: { type: string, format: uuid } }
+        - { in: query, name: areaId,      schema: { type: string, format: uuid } }
+        - { in: query, name: categoryId,  schema: { type: string, format: uuid } }
+        - { in: query, name: status,      schema: { type: string, enum: [operational, needs_repair, under_maintenance, out_of_service, in_storage, decommissioned] } }
+        - { in: query, name: criticality, schema: { type: string, enum: [low, medium, high, critical] } }
+        - { in: query, name: kind,        schema: { type: string, enum: [equipment, fixture, furniture, vehicle, signage, tool, sensor, container, facility, other] } }
+        - { in: query, name: supplierId,  schema: { type: string, format: uuid } }
+        - { in: query, name: q,           schema: { type: string } }
+        - { in: query, name: page,        schema: { type: integer, minimum: 1, default: 1 } }
+        - { in: query, name: pageSize,    schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+      responses:
+        '200':
+          description: Assets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/Asset' } }
+                  meta:
+                    type: object
+                    properties:
+                      page: { type: integer }
+                      pageSize: { type: integer }
+                      total: { type: integer }
+                      totalPages: { type: integer }
+    post:
+      tags: [Assets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AssetInput' }
+      responses:
+        '201':
+          description: Created (with fresh QR)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/AssetWithQr' }
+
+  /assets/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      tags: [Assets]
+      responses:
+        '200':
+          description: Asset detail (hydrated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/AssetHydrated' }
+    patch:
+      tags: [Assets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AssetInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Asset' }
+
+  /assets/{id}/decommission:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    post:
+      tags: [Assets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 1, maxLength: 500 }
+      responses:
+        '200':
+          description: Decommissioned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Asset' }
+
+  /assets/{id}/events:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      tags: [Assets]
+      summary: Immutable event log for the asset (append-only)
+      responses:
+        '200':
+          description: Events (most recent first, capped at 500)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/AssetEvent' } }
+
+  /assets/{id}/tags:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    post:
+      tags: [Assets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tagIds]
+              properties:
+                tagIds:
+                  type: array
+                  items: { type: string, format: uuid }
+      responses:
+        '204': { description: Attached }
+
+  /assets/{id}/tags/{tagId}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+      - name: tagId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    delete:
+      tags: [Assets]
+      responses:
+        '204': { description: Detached }
+
+  /assets/{id}/warranties:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      tags: [Assets]
+      responses:
+        '200':
+          description: Warranties
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/Warranty' } }
+    post:
+      tags: [Assets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/WarrantyInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Warranty' }
+
+  /assets/{id}/maintenance-schedules:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      tags: [Assets]
+      responses:
+        '200':
+          description: Maintenance schedules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/MaintenanceSchedule' } }
+    post:
+      tags: [Assets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MaintenanceScheduleInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/MaintenanceSchedule' }
+
+  /assets/{id}/qr/reprint:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    post:
+      tags: [Assets]
+      summary: Revoke the active QR and mint a new one
+      responses:
+        '201':
+          description: New QR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/AssetQr' }
+
+  /asset-tags:
+    get:
+      tags: [Asset Tags]
+      responses:
+        '200':
+          description: Tags
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/AssetTag' } }
+    post:
+      tags: [Asset Tags]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AssetTagInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/AssetTag' }
+
+  /attachments:
+    get:
+      tags: [Attachments]
+      parameters:
+        - { in: query, name: targetType, required: true, schema: { type: string } }
+        - { in: query, name: targetId,   required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Attachments (each item includes a short-lived signed URL)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/AttachmentWithUrl' } }
+    post:
+      tags: [Attachments]
+      summary: Upload a file (multipart/form-data)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, targetType, targetId]
+              properties:
+                file: { type: string, format: binary }
+                targetType: { type: string }
+                targetId:   { type: string, format: uuid }
+                kind:       { type: string, enum: [document, photo, video, audio, other] }
+                caption:    { type: string }
+                capturedAt: { type: string, format: date-time }
+                latitude:   { type: string }
+                longitude:  { type: string }
+      responses:
+        '201':
+          description: Uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/AttachmentWithUrl' }
+  /attachments/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    delete:
+      tags: [Attachments]
+      responses:
+        '204': { description: Deleted }
+
+  /maintenance-schedules:
+    get:
+      tags: [Maintenance Schedules]
+      parameters:
+        - { in: query, name: assetId,    schema: { type: string, format: uuid } }
+        - { in: query, name: categoryId, schema: { type: string, format: uuid } }
+        - { in: query, name: dueInDays,  schema: { type: integer, minimum: 0, maximum: 365 } }
+      responses:
+        '200':
+          description: Schedules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/MaintenanceSchedule' } }
+
+  /qr/scan/{token}:
+    parameters:
+      - name: token
+        in: path
+        required: true
+        schema: { type: string, minLength: 8, maxLength: 64 }
+    get:
+      tags: [QR]
+      summary: Resolve a scanned QR token to an asset
+      responses:
+        '200':
+          description: Resolved asset summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/QrResolveResult' }
+
 components:
   securitySchemes:
     bearerAuth:
@@ -840,3 +1416,443 @@ components:
         nameAr:        { type: string }
         nameEn:        { type: string }
         parentLevelId: { type: [string, 'null'], format: uuid }
+
+    # ==========================================================
+    # Phase 2 — Operations Core
+    # ==========================================================
+
+    Area:
+      type: object
+      properties:
+        id:            { type: string, format: uuid }
+        companyId:     { type: string, format: uuid }
+        branchId:      { type: string, format: uuid }
+        parentAreaId:  { type: [string, 'null'], format: uuid }
+        code:          { type: string }
+        nameAr:        { type: string }
+        nameEn:        { type: string }
+        kind:
+          type: string
+          enum: [kitchen, cook_line, prep, dishwash, cold_storage, freezer, dry_storage, receiving, waste, mechanical, dining, restroom, office, front_of_house, outdoor, other]
+        description:       { type: [string, 'null'] }
+        riskLevel:
+          type: string
+          enum: [none, low, medium, high, critical]
+        complianceScope:   { type: array, items: { type: string } }
+        targetTempMinC:    { type: [string, 'null'] }
+        targetTempMaxC:    { type: [string, 'null'] }
+        targetHumidityPct: { type: [string, 'null'] }
+        aiSummary:         { type: [string, 'null'] }
+        aiMetadata:        { type: object, additionalProperties: true }
+        isActive:          { type: boolean }
+        metadata:          { type: object, additionalProperties: true }
+        createdAt:         { type: string, format: date-time }
+        updatedAt:         { type: string, format: date-time }
+
+    AreaInput:
+      type: object
+      required: [branchId, code, nameAr, nameEn]
+      properties:
+        branchId:       { type: string, format: uuid }
+        parentAreaId:   { type: [string, 'null'], format: uuid }
+        code:           { type: string }
+        nameAr:         { type: string }
+        nameEn:         { type: string }
+        kind:
+          type: string
+          enum: [kitchen, cook_line, prep, dishwash, cold_storage, freezer, dry_storage, receiving, waste, mechanical, dining, restroom, office, front_of_house, outdoor, other]
+        description:       { type: [string, 'null'] }
+        riskLevel:
+          type: string
+          enum: [none, low, medium, high, critical]
+        complianceScope:   { type: array, items: { type: string } }
+        targetTempMinC:    { type: [string, 'null'] }
+        targetTempMaxC:    { type: [string, 'null'] }
+        targetHumidityPct: { type: [string, 'null'] }
+        metadata:          { type: object, additionalProperties: true }
+        isActive:          { type: boolean }
+
+    AssetCategory:
+      type: object
+      properties:
+        id:               { type: string, format: uuid }
+        companyId:        { type: [string, 'null'], format: uuid, description: "null = system category" }
+        parentId:         { type: [string, 'null'], format: uuid }
+        key:              { type: string }
+        nameAr:           { type: string }
+        nameEn:           { type: string }
+        description:      { type: [string, 'null'] }
+        path:             { type: string }
+        depth:            { type: integer }
+        defaultAssetKind: { type: string, enum: [equipment, fixture, furniture, vehicle, signage, tool, sensor, container, facility, other] }
+        riskLevel:        { type: string, enum: [none, low, medium, high, critical] }
+        suggestedSpecs:
+          type: array
+          items:
+            type: object
+            properties:
+              key:   { type: string }
+              label: { type: object, properties: { ar: { type: string }, en: { type: string } } }
+              type:  { type: string }
+              unit:  { type: string }
+        aiHints:  { type: object, additionalProperties: true }
+        isSystem: { type: boolean }
+        isActive: { type: boolean }
+        iconKey:  { type: [string, 'null'] }
+        colorHex: { type: [string, 'null'] }
+
+    AssetCategoryInput:
+      type: object
+      required: [key, nameAr, nameEn]
+      properties:
+        parentId:         { type: [string, 'null'], format: uuid }
+        key:              { type: string }
+        nameAr:           { type: string }
+        nameEn:           { type: string }
+        description:      { type: [string, 'null'] }
+        defaultAssetKind: { type: string }
+        riskLevel:        { type: string }
+        suggestedSpecs:   { type: array, items: { type: object } }
+        aiHints:          { type: object, additionalProperties: true }
+        iconKey:          { type: [string, 'null'] }
+        colorHex:         { type: [string, 'null'] }
+
+    Supplier:
+      type: object
+      properties:
+        id:                     { type: string, format: uuid }
+        companyId:              { type: string, format: uuid }
+        code:                   { type: [string, 'null'] }
+        nameAr:                 { type: string }
+        nameEn:                 { type: string }
+        legalName:              { type: [string, 'null'] }
+        commercialRegistration: { type: [string, 'null'] }
+        vatNumber:              { type: [string, 'null'] }
+        email:                  { type: [string, 'null'], format: email }
+        phone:                  { type: [string, 'null'] }
+        website:                { type: [string, 'null'] }
+        country:                { type: string }
+        city:                   { type: [string, 'null'] }
+        addressLine:            { type: [string, 'null'] }
+        categories:             { type: array, items: { type: string } }
+        ratingAvg:              { type: [string, 'null'] }
+        ratingCount:            { type: string }
+        approvals:              { type: object, additionalProperties: true }
+        aiSummary:              { type: [string, 'null'] }
+        aiMetadata:             { type: object, additionalProperties: true }
+        isActive:               { type: boolean }
+        isPreferred:            { type: boolean }
+        notes:                  { type: [string, 'null'] }
+
+    SupplierInput:
+      type: object
+      required: [nameAr, nameEn]
+      properties:
+        code:                   { type: [string, 'null'] }
+        nameAr:                 { type: string }
+        nameEn:                 { type: string }
+        legalName:              { type: [string, 'null'] }
+        commercialRegistration: { type: [string, 'null'] }
+        vatNumber:              { type: [string, 'null'] }
+        email:                  { type: [string, 'null'], format: email }
+        phone:                  { type: [string, 'null'] }
+        website:                { type: [string, 'null'] }
+        country:                { type: string }
+        city:                   { type: [string, 'null'] }
+        addressLine:            { type: [string, 'null'] }
+        categories:             { type: array, items: { type: string } }
+        approvals:              { type: object, additionalProperties: true }
+        isPreferred:            { type: boolean }
+        notes:                  { type: [string, 'null'] }
+
+    SupplierContact:
+      type: object
+      properties:
+        id:         { type: string, format: uuid }
+        supplierId: { type: string, format: uuid }
+        fullName:   { type: string }
+        title:      { type: [string, 'null'] }
+        email:      { type: [string, 'null'], format: email }
+        phone:      { type: [string, 'null'] }
+        isPrimary:  { type: boolean }
+
+    SupplierContactInput:
+      type: object
+      required: [fullName]
+      properties:
+        fullName:  { type: string }
+        title:     { type: [string, 'null'] }
+        email:     { type: [string, 'null'], format: email }
+        phone:     { type: [string, 'null'] }
+        isPrimary: { type: boolean }
+        notes:     { type: [string, 'null'] }
+
+    SupplierWithContacts:
+      allOf:
+        - $ref: '#/components/schemas/Supplier'
+        - type: object
+          properties:
+            contacts:
+              type: array
+              items: { $ref: '#/components/schemas/SupplierContact' }
+
+    Asset:
+      type: object
+      properties:
+        id:               { type: string, format: uuid }
+        companyId:        { type: string, format: uuid }
+        branchId:         { type: string, format: uuid }
+        areaId:           { type: [string, 'null'], format: uuid }
+        categoryId:       { type: [string, 'null'], format: uuid }
+        kind:             { type: string, enum: [equipment, fixture, furniture, vehicle, signage, tool, sensor, container, facility, other] }
+        code:             { type: string }
+        nameAr:           { type: string }
+        nameEn:           { type: string }
+        description:      { type: [string, 'null'] }
+        manufacturer:     { type: [string, 'null'] }
+        model:            { type: [string, 'null'] }
+        serialNumber:     { type: [string, 'null'] }
+        barcode:          { type: [string, 'null'] }
+        spec:             { type: object, additionalProperties: true }
+        status:           { type: string, enum: [operational, needs_repair, under_maintenance, out_of_service, in_storage, decommissioned] }
+        criticality:      { type: string, enum: [low, medium, high, critical] }
+        riskLevel:        { type: string, enum: [none, low, medium, high, critical] }
+        supplierId:       { type: [string, 'null'], format: uuid }
+        purchaseDate:     { type: [string, 'null'], format: date }
+        purchaseCost:     { type: [string, 'null'] }
+        currency:         { type: string }
+        installedDate:    { type: [string, 'null'], format: date }
+        expectedLifespanMonths: { type: [integer, 'null'] }
+        decommissionedAt: { type: [string, 'null'], format: date-time }
+        decommissionReason: { type: [string, 'null'] }
+        lastServicedAt:   { type: [string, 'null'], format: date-time }
+        nextServiceDueAt: { type: [string, 'null'], format: date-time }
+        aiSummary:        { type: [string, 'null'] }
+        aiMetadata:       { type: object, additionalProperties: true }
+        metadata:         { type: object, additionalProperties: true }
+        createdAt:        { type: string, format: date-time }
+        updatedAt:        { type: string, format: date-time }
+
+    AssetInput:
+      type: object
+      required: [branchId, code, nameAr, nameEn]
+      properties:
+        branchId:      { type: string, format: uuid }
+        areaId:        { type: [string, 'null'], format: uuid }
+        categoryId:    { type: [string, 'null'], format: uuid }
+        kind:          { type: string }
+        code:          { type: string }
+        nameAr:        { type: string }
+        nameEn:        { type: string }
+        description:   { type: [string, 'null'] }
+        manufacturer:  { type: [string, 'null'] }
+        model:         { type: [string, 'null'] }
+        serialNumber:  { type: [string, 'null'] }
+        barcode:       { type: [string, 'null'] }
+        spec:          { type: object, additionalProperties: true }
+        status:        { type: string }
+        criticality:   { type: string }
+        riskLevel:     { type: string }
+        supplierId:    { type: [string, 'null'], format: uuid }
+        purchaseDate:  { type: [string, 'null'], format: date }
+        purchaseCost:  { type: [number, 'null'] }
+        currency:      { type: string }
+        installedDate: { type: [string, 'null'], format: date }
+        expectedLifespanMonths: { type: [integer, 'null'] }
+        metadata:      { type: object, additionalProperties: true }
+
+    AssetQr:
+      type: object
+      properties:
+        id:        { type: string, format: uuid }
+        token:     { type: string }
+        scanUrl:   { type: string }
+        isActive:  { type: boolean }
+        printedAt: { type: [string, 'null'], format: date-time }
+
+    AssetWithQr:
+      allOf:
+        - $ref: '#/components/schemas/Asset'
+        - type: object
+          properties:
+            activeQr: { $ref: '#/components/schemas/AssetQr' }
+
+    AssetHydrated:
+      allOf:
+        - $ref: '#/components/schemas/Asset'
+        - type: object
+          properties:
+            branch:  { type: object, properties: { id: { type: string, format: uuid }, nameEn: { type: string }, nameAr: { type: string } } }
+            area:    { type: [object, 'null'] }
+            category: { type: [object, 'null'] }
+            supplier: { type: [object, 'null'] }
+            activeQr: { type: [object, 'null'] }
+            tags:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:       { type: string, format: uuid }
+                  key:      { type: string }
+                  labelEn:  { type: string }
+                  labelAr:  { type: string }
+                  colorHex: { type: [string, 'null'] }
+
+    AssetEvent:
+      type: object
+      properties:
+        id:            { type: string, format: uuid }
+        assetId:       { type: string, format: uuid }
+        eventType:
+          type: string
+          enum: [created, updated, moved, status_changed, category_changed, kind_changed, tagged, untagged, warranty_added, warranty_updated, warranty_expired, maintenance_scheduled, maintenance_updated, maintenance_completed, service_performed, inspected, decommissioned, reinstated, document_added, document_removed, photo_added, photo_removed, qr_generated, qr_reprinted, spec_updated, supplier_assigned, note_added]
+        actorUserId:   { type: [string, 'null'], format: uuid }
+        source:        { type: string }
+        payload:       { type: object, additionalProperties: true }
+        context:       { type: object, additionalProperties: true }
+        aiAnnotation:  { type: object, additionalProperties: true }
+        createdAt:     { type: string, format: date-time }
+
+    AssetTag:
+      type: object
+      properties:
+        id:       { type: string, format: uuid }
+        key:      { type: string }
+        labelAr:  { type: string }
+        labelEn:  { type: string }
+        colorHex: { type: [string, 'null'] }
+
+    AssetTagInput:
+      type: object
+      required: [key, labelAr, labelEn]
+      properties:
+        key:      { type: string }
+        labelAr:  { type: string }
+        labelEn:  { type: string }
+        colorHex: { type: [string, 'null'] }
+
+    Warranty:
+      type: object
+      properties:
+        id:                 { type: string, format: uuid }
+        assetId:            { type: string, format: uuid }
+        providerSupplierId: { type: [string, 'null'], format: uuid }
+        type:               { type: string, enum: [manufacturer, extended, service_contract, insurance, other] }
+        referenceNumber:    { type: [string, 'null'] }
+        coverageSummary:    { type: [string, 'null'] }
+        exclusions:         { type: [string, 'null'] }
+        termsText:          { type: [string, 'null'] }
+        startsOn:           { type: string, format: date }
+        endsOn:             { type: string, format: date }
+        cost:               { type: [string, 'null'] }
+        currency:           { type: string }
+        coverageLimit:      { type: [string, 'null'] }
+        autoRenew:          { type: boolean }
+        aiExtracted:        { type: object, additionalProperties: true }
+        isActive:           { type: boolean }
+
+    WarrantyInput:
+      type: object
+      required: [startsOn, endsOn]
+      properties:
+        providerSupplierId: { type: [string, 'null'], format: uuid }
+        type:               { type: string }
+        referenceNumber:    { type: [string, 'null'] }
+        coverageSummary:    { type: [string, 'null'] }
+        exclusions:         { type: [string, 'null'] }
+        termsText:          { type: [string, 'null'] }
+        startsOn:           { type: string, format: date }
+        endsOn:             { type: string, format: date }
+        cost:               { type: [number, 'null'] }
+        currency:           { type: string }
+        coverageLimit:      { type: [number, 'null'] }
+        autoRenew:          { type: boolean }
+
+    Attachment:
+      type: object
+      properties:
+        id:              { type: string, format: uuid }
+        companyId:       { type: string, format: uuid }
+        targetType:      { type: string }
+        targetId:        { type: string, format: uuid }
+        kind:            { type: string, enum: [document, photo, video, audio, other] }
+        filename:        { type: string }
+        mimeType:        { type: string }
+        sizeBytes:       { type: integer }
+        checksumSha256:  { type: [string, 'null'] }
+        storageDriver:   { type: string }
+        storageKey:      { type: string }
+        thumbnailKey:    { type: [string, 'null'] }
+        widthPx:         { type: [integer, 'null'] }
+        heightPx:        { type: [integer, 'null'] }
+        durationSec:     { type: [integer, 'null'] }
+        uploadedByUserId:{ type: [string, 'null'], format: uuid }
+        caption:         { type: [string, 'null'] }
+        capturedAt:      { type: [string, 'null'], format: date-time }
+        latitude:        { type: [string, 'null'] }
+        longitude:       { type: [string, 'null'] }
+        aiExtracted:     { type: object, additionalProperties: true }
+        createdAt:       { type: string, format: date-time }
+
+    AttachmentWithUrl:
+      allOf:
+        - $ref: '#/components/schemas/Attachment'
+        - type: object
+          properties:
+            url:           { type: string, description: "Short-lived signed URL" }
+            urlExpiresAt:  { type: string, format: date-time }
+
+    MaintenanceSchedule:
+      type: object
+      properties:
+        id:                       { type: string, format: uuid }
+        assetId:                  { type: [string, 'null'], format: uuid }
+        categoryId:               { type: [string, 'null'], format: uuid }
+        titleAr:                  { type: string }
+        titleEn:                  { type: string }
+        description:              { type: [string, 'null'] }
+        kind:                     { type: string, enum: [preventive, corrective, predictive, inspection, calibration, sanitation, safety_check, other] }
+        frequency:                { type: string, enum: [daily, weekly, biweekly, monthly, bimonthly, quarterly, semi_annually, annually, usage_based, condition_based, custom] }
+        rrule:                    { type: [string, 'null'] }
+        intervalCount:            { type: integer }
+        riskIfSkipped:            { type: string, enum: [none, low, medium, high, critical] }
+        startsOn:                 { type: string, format: date-time }
+        endsOn:                   { type: [string, 'null'], format: date-time }
+        nextDueAt:                { type: [string, 'null'], format: date-time }
+        lastGeneratedAt:          { type: [string, 'null'], format: date-time }
+        estimatedDurationMinutes: { type: [integer, 'null'] }
+        requiresShutdown:         { type: boolean }
+        playbook:                 { type: object, additionalProperties: true }
+        predictedFailureScore:    { type: [string, 'null'] }
+        predictedNextFailureAt:   { type: [string, 'null'], format: date-time }
+        isActive:                 { type: boolean }
+
+    MaintenanceScheduleInput:
+      type: object
+      required: [titleAr, titleEn, startsOn]
+      properties:
+        titleAr:                  { type: string }
+        titleEn:                  { type: string }
+        description:              { type: [string, 'null'] }
+        kind:                     { type: string }
+        frequency:                { type: string }
+        rrule:                    { type: [string, 'null'] }
+        intervalCount:            { type: integer }
+        riskIfSkipped:            { type: string }
+        startsOn:                 { type: string, format: date-time }
+        endsOn:                   { type: [string, 'null'], format: date-time }
+        estimatedDurationMinutes: { type: [integer, 'null'] }
+        requiresShutdown:         { type: boolean }
+        playbook:                 { type: object, additionalProperties: true }
+
+    QrResolveResult:
+      type: object
+      properties:
+        assetId:     { type: string, format: uuid }
+        code:        { type: string }
+        nameEn:      { type: string }
+        nameAr:      { type: string }
+        status:      { type: string }
+        criticality: { type: string }
+        branch:      { type: object }
+        area:        { type: [object, 'null'] }

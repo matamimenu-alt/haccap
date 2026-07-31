@@ -4,6 +4,7 @@ import {
   LayoutDashboard, Building2, Store, MapPin, Users, ShieldCheck,
   Layers3, Landmark, ClipboardList, ThermometerSun, ListTodo,
   AlertOctagon, FileBarChart2, Settings,
+  Package, Boxes, Warehouse, Truck, Wrench,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,12 +29,22 @@ const sections: NavSection[] = [
     ],
   },
   {
+    titleKey: 'nav.operations',
+    items: [
+      { to: '/operations/assets',            icon: Package,   labelKey: 'nav.assets' },
+      { to: '/operations/areas',             icon: Warehouse, labelKey: 'nav.areas' },
+      { to: '/operations/asset-categories',  icon: Boxes,     labelKey: 'nav.assetCategories' },
+      { to: '/operations/suppliers',         icon: Truck,     labelKey: 'nav.suppliers' },
+      { to: '/operations/maintenance',       icon: Wrench,    labelKey: 'nav.maintenance' },
+    ],
+  },
+  {
     titleKey: 'nav.compliance',
     items: [
+      { to: '/tasks',      icon: ListTodo,       labelKey: 'nav.tasks',      comingSoon: true },
       { to: '/compliance', icon: ClipboardList, labelKey: 'nav.compliance', comingSoon: true },
       { to: '/haccp',      icon: ShieldCheck,    labelKey: 'nav.haccp',      comingSoon: true },
       { to: '/food-safety',icon: ThermometerSun, labelKey: 'nav.foodSafety', comingSoon: true },
-      { to: '/tasks',      icon: ListTodo,       labelKey: 'nav.tasks',      comingSoon: true },
       { to: '/capa',       icon: AlertOctagon,   labelKey: 'nav.capa',       comingSoon: true },
       { to: '/reports',    icon: FileBarChart2,  labelKey: 'nav.reports',    comingSoon: true },
     ],
