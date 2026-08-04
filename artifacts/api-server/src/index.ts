@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { v1Router } from './routes/index.js';
 import { errorHandler } from './middleware/error-handler.js';
+import { startJobRunner } from './services/jobs.js';
 
 const app = express();
 
@@ -40,8 +41,11 @@ const server = app.listen(env.API_PORT, env.API_HOST, () => {
   logger.info(`RCOS API listening on http://${env.API_HOST}:${env.API_PORT}/api/v1`);
 });
 
+const stopJobs = startJobRunner();
+
 const shutdown = (sig: string) => {
   logger.info({ sig }, 'shutting down');
+  stopJobs();
   server.close(() => process.exit(0));
   setTimeout(() => process.exit(1), 10_000).unref();
 };

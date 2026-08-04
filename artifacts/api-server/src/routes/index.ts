@@ -16,6 +16,10 @@ import { assetTagsRouter } from './asset-tags.js';
 import { attachmentsRouter } from './attachments.js';
 import { maintenanceSchedulesRouter } from './maintenance-schedules.js';
 import { qrRouter } from './qr.js';
+// Phase 3 — Task Engine
+import { taskTemplatesRouter } from './task-templates.js';
+import { tasksRouter } from './tasks.js';
+import { jobsRouter } from './jobs.js';
 
 export const v1Router: Router = Router();
 
@@ -42,3 +46,8 @@ v1Router.use('/asset-tags', assetTagsRouter);
 v1Router.use('/attachments', attachmentsRouter);
 v1Router.use('/maintenance-schedules', maintenanceSchedulesRouter);
 v1Router.use('/qr', qrRouter);
+
+// Phase 3 — Task Engine
+v1Router.use('/task-templates', taskTemplatesRouter);
+v1Router.use('/tasks', tasksRouter);
+v1Router.use('/jobs', jobsRouter);

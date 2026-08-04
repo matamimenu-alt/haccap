@@ -21,3 +21,11 @@ export * from './warranties.js';
 export * from './attachments.js';
 export * from './maintenance-schedules.js';
 export * from './asset-events.js';
+// Phase 3 — Task Engine
+export * from './task-templates.js';
+export * from './tasks.js';
+export * from './task-assignments.js';
+export * from './task-comments.js';
+export * from './task-events.js';
+export * from './task-dependencies.js';
+export * from './task-time-entries.js';

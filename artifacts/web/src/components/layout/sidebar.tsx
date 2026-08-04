@@ -39,9 +39,14 @@ const sections: NavSection[] = [
     ],
   },
   {
+    titleKey: 'nav.tasks',
+    items: [
+      { to: '/tasks',      icon: ListTodo,      labelKey: 'nav.tasks' },
+    ],
+  },
+  {
     titleKey: 'nav.compliance',
     items: [
-      { to: '/tasks',      icon: ListTodo,       labelKey: 'nav.tasks',      comingSoon: true },
       { to: '/compliance', icon: ClipboardList, labelKey: 'nav.compliance', comingSoon: true },
       { to: '/haccp',      icon: ShieldCheck,    labelKey: 'nav.haccp',      comingSoon: true },
       { to: '/food-safety',icon: ThermometerSun, labelKey: 'nav.foodSafety', comingSoon: true },

@@ -20,6 +20,11 @@ import { AssetCategoriesPage } from '@/pages/operations/AssetCategoriesPage';
 import { SuppliersPage } from '@/pages/operations/SuppliersPage';
 import { MaintenancePage } from '@/pages/operations/MaintenancePage';
 import { QrScanPage } from '@/pages/operations/QrScanPage';
+// Phase 3 — Task Engine
+import { TasksPage } from '@/pages/tasks/TasksPage';
+import { TaskDetailPage } from '@/pages/tasks/TaskDetailPage';
+import { TaskNewPage } from '@/pages/tasks/TaskNewPage';
+import { TaskTemplatesPage } from '@/pages/tasks/TaskTemplatesPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,6 +66,11 @@ export default function App() {
             <Route path="/operations/suppliers" element={<SuppliersPage />} />
             <Route path="/operations/maintenance" element={<MaintenancePage />} />
             <Route path="/s/:token" element={<QrScanPage />} />
+            {/* Phase 3 — Task Engine */}
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/tasks/new" element={<TaskNewPage />} />
+            <Route path="/tasks/templates" element={<TaskTemplatesPage />} />
+            <Route path="/tasks/:id" element={<TaskDetailPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

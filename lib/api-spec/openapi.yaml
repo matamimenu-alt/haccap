@@ -36,6 +36,10 @@ tags:
   - name: Attachments
   - name: Maintenance Schedules
   - name: QR
+  # Phase 3 — Task Engine
+  - name: Task Templates
+  - name: Tasks
+  - name: Jobs
 
 security:
   - bearerAuth: []
@@ -1095,6 +1099,432 @@ paths:
                   success: { type: boolean }
                   data: { type: array, items: { $ref: '#/components/schemas/MaintenanceSchedule' } }
 
+  # ============================================================
+  # Phase 3 — Task Engine
+  # ============================================================
+
+  /task-templates:
+    get:
+      tags: [Task Templates]
+      responses:
+        '200':
+          description: Task templates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/TaskTemplate' } }
+    post:
+      tags: [Task Templates]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskTemplateInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/TaskTemplate' }
+  /task-templates/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    patch:
+      tags: [Task Templates]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskTemplateInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/TaskTemplate' }
+    delete:
+      tags: [Task Templates]
+      responses:
+        '204': { description: Deleted }
+
+  /tasks:
+    get:
+      tags: [Tasks]
+      summary: List tasks with rich filters
+      parameters:
+        - { in: query, name: branchId,     schema: { type: string, format: uuid } }
+        - { in: query, name: areaId,       schema: { type: string, format: uuid } }
+        - { in: query, name: targetType,   schema: { type: string } }
+        - { in: query, name: targetId,     schema: { type: string, format: uuid } }
+        - { in: query, name: status,       schema: { type: array, items: { type: string, enum: [draft, open, scheduled, in_progress, blocked, in_review, completed, verified, cancelled] } }, style: form, explode: true }
+        - { in: query, name: priority,     schema: { type: array, items: { type: string, enum: [low, normal, high, urgent, critical] } }, style: form, explode: true }
+        - { in: query, name: kind,         schema: { type: array, items: { type: string } }, style: form, explode: true }
+        - { in: query, name: source,       schema: { type: string, enum: [manual, maintenance_schedule, inspection, ccp_deviation, incident, system, ai] } }
+        - { in: query, name: assignedToMe, schema: { type: boolean } }
+        - { in: query, name: dueBefore,    schema: { type: string, format: date-time } }
+        - { in: query, name: overdue,      schema: { type: boolean } }
+        - { in: query, name: q,            schema: { type: string } }
+        - { in: query, name: page,         schema: { type: integer, minimum: 1, default: 1 } }
+        - { in: query, name: pageSize,     schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+      responses:
+        '200':
+          description: Tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/Task' } }
+                  meta:
+                    type: object
+                    properties:
+                      page: { type: integer }
+                      pageSize: { type: integer }
+                      total: { type: integer }
+                      totalPages: { type: integer }
+    post:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Task' }
+
+  /tasks/summary:
+    get:
+      tags: [Tasks]
+      summary: Aggregate counts for the dashboard
+      responses:
+        '200':
+          description: Summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      byStatusPriority:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            status: { type: string }
+                            priority: { type: string }
+                            count: { type: integer }
+                      overdue: { type: integer }
+
+  /tasks/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get:
+      tags: [Tasks]
+      responses:
+        '200':
+          description: Task detail (hydrated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/TaskHydrated' }
+    patch:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskPatch' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/Task' }
+
+  /tasks/{id}/start:    { parameters: [ { $ref: '#/components/parameters/IdParam' } ], post: { tags: [Tasks], responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/TaskEnvelope' } } } } } } }
+  /tasks/{id}/submit:   { parameters: [ { $ref: '#/components/parameters/IdParam' } ], post: { tags: [Tasks], responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/TaskEnvelope' } } } } } } }
+  /tasks/{id}/complete:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    post:
+      tags: [Tasks]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: { notes: { type: [string, 'null'] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/TaskEnvelope' } } } }
+  /tasks/{id}/verify:   { parameters: [ { $ref: '#/components/parameters/IdParam' } ], post: { tags: [Tasks], responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/TaskEnvelope' } } } } } } }
+  /tasks/{id}/cancel:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    post:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties: { reason: { type: string, minLength: 1, maxLength: 500 } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/TaskEnvelope' } } } }
+  /tasks/{id}/block:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    post:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties: { reason: { type: string, minLength: 1, maxLength: 500 } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/TaskEnvelope' } } } }
+
+  /tasks/{id}/events:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get:
+      tags: [Tasks]
+      responses:
+        '200':
+          description: Immutable event log
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/TaskEvent' } }
+
+  /tasks/{id}/comments:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get:
+      tags: [Tasks]
+      responses:
+        '200':
+          description: Comments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/TaskComment' } }
+    post:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body: { type: string, minLength: 1, maxLength: 5000 }
+                mentionsUserIds: { type: array, items: { type: string, format: uuid } }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/TaskComment' }
+
+  /tasks/{id}/assign:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    post:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId: { type: string, format: uuid }
+                isPrimary: { type: boolean, default: false }
+      responses:
+        '204': { description: Attached }
+
+  /tasks/{id}/assign/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+      - name: userId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    delete:
+      tags: [Tasks]
+      responses:
+        '204': { description: Detached }
+
+  /tasks/{id}/checklist/{itemKey}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+      - name: itemKey
+        in: path
+        required: true
+        schema: { type: string }
+    patch:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [done]
+              properties:
+                done: { type: boolean }
+                note: { type: [string, 'null'] }
+                value: {}
+      responses:
+        '200':
+          description: New checklist state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      checklistState: { type: object, additionalProperties: true }
+
+  /tasks/{id}/time-entries:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get:
+      tags: [Tasks]
+      responses:
+        '200':
+          description: Time entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/TaskTimeEntry' } }
+    post:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskTimeEntryInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { $ref: '#/components/schemas/TaskTimeEntry' }
+
+  /tasks/{id}/dependencies:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    post:
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [blocksTaskId]
+              properties:
+                blocksTaskId: { type: string, format: uuid }
+      responses:
+        '204': { description: Added }
+
+  /jobs/materialize:
+    post:
+      tags: [Jobs]
+      summary: Force a materialization tick — creates tasks for every due schedule
+      parameters:
+        - in: query
+          name: horizonHours
+          schema: { type: integer, minimum: 1, maximum: 720, default: 24 }
+      responses:
+        '200':
+          description: Result summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      scanned: { type: integer }
+                      materialized: { type: integer }
+                      skipped: { type: integer }
+
+  /jobs/materialize/{scheduleId}:
+    parameters:
+      - name: scheduleId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    post:
+      tags: [Jobs]
+      responses:
+        '200':
+          description: Materialization result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      taskId: { type: string, format: uuid }
+                      skipped: { type: string }
+
   /qr/scan/{token}:
     parameters:
       - name: token
@@ -1856,3 +2286,200 @@ components:
         criticality: { type: string }
         branch:      { type: object }
         area:        { type: [object, 'null'] }
+
+    # ==========================================================
+    # Phase 3 — Task Engine
+    # ==========================================================
+
+    TaskTemplate:
+      type: object
+      properties:
+        id:                       { type: string, format: uuid }
+        companyId:                { type: [string, 'null'], format: uuid }
+        key:                      { type: string }
+        titleAr:                  { type: string }
+        titleEn:                  { type: string }
+        description:              { type: [string, 'null'] }
+        kind:                     { type: string, enum: [maintenance, inspection_followup, capa_action, incident_response, compliance, sanitation, training, safety_check, calibration, ad_hoc, other] }
+        defaultPriority:          { type: string, enum: [low, normal, high, urgent, critical] }
+        defaultRisk:              { type: string, enum: [none, low, medium, high, critical] }
+        estimatedDurationMinutes: { type: [integer, 'null'] }
+        requiresEvidence:         { type: boolean }
+        requiresSignature:        { type: boolean }
+        requiresVerification:     { type: boolean }
+        checklistItems:
+          type: array
+          items:
+            type: object
+            properties:
+              key:      { type: string }
+              labelAr:  { type: string }
+              labelEn:  { type: string }
+              required: { type: boolean }
+              type:     { type: string }
+        requiredAttachments:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:     { type: string }
+              minCount: { type: integer }
+              labelAr:  { type: string }
+              labelEn:  { type: string }
+        playbook: { type: object, additionalProperties: true }
+        aiHints:  { type: object, additionalProperties: true }
+        isSystem: { type: boolean }
+        isActive: { type: boolean }
+
+    TaskTemplateInput:
+      type: object
+      required: [key, titleAr, titleEn]
+      properties:
+        key:                      { type: string }
+        titleAr:                  { type: string }
+        titleEn:                  { type: string }
+        description:              { type: [string, 'null'] }
+        kind:                     { type: string }
+        defaultPriority:          { type: string }
+        defaultRisk:              { type: string }
+        estimatedDurationMinutes: { type: [integer, 'null'] }
+        requiresEvidence:         { type: boolean }
+        requiresSignature:        { type: boolean }
+        requiresVerification:     { type: boolean }
+        checklistItems:           { type: array, items: { type: object } }
+        requiredAttachments:      { type: array, items: { type: object } }
+        playbook:                 { type: object, additionalProperties: true }
+        aiHints:                  { type: object, additionalProperties: true }
+
+    Task:
+      type: object
+      properties:
+        id:                       { type: string, format: uuid }
+        companyId:                { type: string, format: uuid }
+        branchId:                 { type: string, format: uuid }
+        areaId:                   { type: [string, 'null'], format: uuid }
+        targetType:               { type: string }
+        targetId:                 { type: string, format: uuid }
+        templateId:               { type: [string, 'null'], format: uuid }
+        source:                   { type: string, enum: [manual, maintenance_schedule, inspection, ccp_deviation, incident, system, ai] }
+        sourceId:                 { type: [string, 'null'], format: uuid }
+        kind:                     { type: string }
+        titleAr:                  { type: string }
+        titleEn:                  { type: string }
+        description:              { type: [string, 'null'] }
+        status:                   { type: string, enum: [draft, open, scheduled, in_progress, blocked, in_review, completed, verified, cancelled] }
+        priority:                 { type: string, enum: [low, normal, high, urgent, critical] }
+        riskLevel:                { type: string, enum: [none, low, medium, high, critical] }
+        primaryAssigneeUserId:    { type: [string, 'null'], format: uuid }
+        assignedRoleKey:          { type: [string, 'null'] }
+        scheduledStartAt:         { type: [string, 'null'], format: date-time }
+        dueAt:                    { type: [string, 'null'], format: date-time }
+        startedAt:                { type: [string, 'null'], format: date-time }
+        completedAt:              { type: [string, 'null'], format: date-time }
+        verifiedAt:               { type: [string, 'null'], format: date-time }
+        cancelledAt:              { type: [string, 'null'], format: date-time }
+        checklistState:           { type: object, additionalProperties: true }
+        requiredEvidenceMet:      { type: boolean }
+        aiSummary:                { type: [string, 'null'] }
+        aiMetadata:               { type: object, additionalProperties: true }
+        aiRiskScore:              { type: [string, 'null'] }
+        aiPredictedOverdue:       { type: boolean }
+        metadata:                 { type: object, additionalProperties: true }
+        createdAt:                { type: string, format: date-time }
+        updatedAt:                { type: string, format: date-time }
+
+    TaskEnvelope:
+      type: object
+      properties:
+        success: { type: boolean }
+        data:    { $ref: '#/components/schemas/Task' }
+
+    TaskInput:
+      type: object
+      required: [branchId, targetType, targetId, titleAr, titleEn]
+      properties:
+        branchId:                 { type: string, format: uuid }
+        areaId:                   { type: [string, 'null'], format: uuid }
+        targetType:               { type: string }
+        targetId:                 { type: string, format: uuid }
+        templateId:               { type: [string, 'null'], format: uuid }
+        kind:                     { type: string }
+        titleAr:                  { type: string }
+        titleEn:                  { type: string }
+        description:              { type: [string, 'null'] }
+        priority:                 { type: string }
+        riskLevel:                { type: string }
+        primaryAssigneeUserId:    { type: [string, 'null'], format: uuid }
+        assignedRoleKey:          { type: [string, 'null'] }
+        scheduledStartAt:         { type: [string, 'null'], format: date-time }
+        dueAt:                    { type: [string, 'null'], format: date-time }
+        estimatedDurationMinutes: { type: [integer, 'null'] }
+
+    TaskPatch:
+      type: object
+      properties:
+        titleAr:                  { type: string }
+        titleEn:                  { type: string }
+        description:              { type: [string, 'null'] }
+        priority:                 { type: string }
+        riskLevel:                { type: string }
+        areaId:                   { type: [string, 'null'], format: uuid }
+        primaryAssigneeUserId:    { type: [string, 'null'], format: uuid }
+        assignedRoleKey:          { type: [string, 'null'] }
+        scheduledStartAt:         { type: [string, 'null'], format: date-time }
+        dueAt:                    { type: [string, 'null'], format: date-time }
+        estimatedDurationMinutes: { type: [integer, 'null'] }
+
+    TaskHydrated:
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          properties:
+            template:     { type: [object, 'null'] }
+            branch:       { type: object }
+            area:         { type: [object, 'null'] }
+            assignees:    { type: array, items: { type: object } }
+            dependencies: { type: array, items: { type: object } }
+
+    TaskEvent:
+      type: object
+      properties:
+        id:           { type: string, format: uuid }
+        taskId:       { type: string, format: uuid }
+        eventType:    { type: string }
+        actorUserId:  { type: [string, 'null'], format: uuid }
+        source:       { type: string }
+        payload:      { type: object, additionalProperties: true }
+        context:      { type: object, additionalProperties: true }
+        aiAnnotation: { type: object, additionalProperties: true }
+        createdAt:    { type: string, format: date-time }
+
+    TaskComment:
+      type: object
+      properties:
+        id:              { type: string, format: uuid }
+        taskId:          { type: string, format: uuid }
+        authorUserId:    { type: string, format: uuid }
+        body:            { type: string }
+        mentionsUserIds: { type: array, items: { type: string, format: uuid } }
+        createdAt:       { type: string, format: date-time }
+
+    TaskTimeEntry:
+      type: object
+      properties:
+        id:        { type: string, format: uuid }
+        taskId:    { type: string, format: uuid }
+        userId:    { type: string, format: uuid }
+        startedAt: { type: string, format: date-time }
+        endedAt:   { type: [string, 'null'], format: date-time }
+        minutes:   { type: [integer, 'null'] }
+        note:      { type: [string, 'null'] }
+
+    TaskTimeEntryInput:
+      type: object
+      required: [startedAt]
+      properties:
+        startedAt: { type: string, format: date-time }
+        endedAt:   { type: [string, 'null'], format: date-time }
+        minutes:   { type: [integer, 'null'] }
+        note:      { type: [string, 'null'] }

@@ -40,6 +40,19 @@ export const PERMISSIONS = {
   attachments_read:         { key: 'attachments:read',         module: 'operations', action: 'read' },
   attachments_write:        { key: 'attachments:write',        module: 'operations', action: 'write' },
   qr_scan:                  { key: 'qr:scan',                  module: 'operations', action: 'scan' },
+
+  // Phase 3 — Task Engine
+  task_templates_read:      { key: 'task_templates:read',      module: 'tasks', action: 'read' },
+  task_templates_write:     { key: 'task_templates:write',     module: 'tasks', action: 'write' },
+  tasks_read:               { key: 'tasks:read',               module: 'tasks', action: 'read' },
+  tasks_write:              { key: 'tasks:write',              module: 'tasks', action: 'write' },
+  tasks_transition:         { key: 'tasks:transition',         module: 'tasks', action: 'transition' },
+  tasks_verify:             { key: 'tasks:verify',             module: 'tasks', action: 'verify' },
+  tasks_assign:             { key: 'tasks:assign',             module: 'tasks', action: 'assign' },
+  tasks_comment:            { key: 'tasks:comment',            module: 'tasks', action: 'comment' },
+  tasks_time:               { key: 'tasks:time',               module: 'tasks', action: 'time' },
+  task_events_read:         { key: 'task_events:read',         module: 'tasks', action: 'read' },
+  jobs_admin:               { key: 'jobs:admin',               module: 'tasks', action: 'admin' },
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]['key'];
@@ -67,6 +80,11 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'maintenance:read', 'maintenance:write',
     'attachments:read', 'attachments:write',
     'qr:scan',
+    // Phase 3
+    'task_templates:read', 'task_templates:write',
+    'tasks:read', 'tasks:write', 'tasks:transition', 'tasks:verify',
+    'tasks:assign', 'tasks:comment', 'tasks:time',
+    'task_events:read', 'jobs:admin',
   ],
   area_manager: [
     'companies:read', 'brands:read', 'branches:read', 'branches:write',
@@ -81,6 +99,10 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'maintenance:read', 'maintenance:write',
     'attachments:read', 'attachments:write',
     'qr:scan',
+    'task_templates:read',
+    'tasks:read', 'tasks:write', 'tasks:transition', 'tasks:verify',
+    'tasks:assign', 'tasks:comment', 'tasks:time',
+    'task_events:read',
   ],
   branch_manager: [
     'companies:read', 'brands:read', 'branches:read',
@@ -95,6 +117,10 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'maintenance:read',
     'attachments:read', 'attachments:write',
     'qr:scan',
+    'task_templates:read',
+    'tasks:read', 'tasks:write', 'tasks:transition', 'tasks:verify',
+    'tasks:assign', 'tasks:comment', 'tasks:time',
+    'task_events:read',
   ],
   food_safety_officer: [
     'branches:read', 'users:read',
@@ -106,6 +132,9 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'maintenance:read',
     'attachments:read', 'attachments:write',
     'qr:scan',
+    'task_templates:read', 'task_templates:write',
+    'tasks:read', 'tasks:write', 'tasks:transition',
+    'tasks:comment', 'tasks:time', 'task_events:read',
   ],
   internal_auditor: [
     'companies:read', 'brands:read', 'branches:read', 'users:read',
@@ -114,17 +143,23 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'assets:read', 'asset_events:read',
     'warranties:read', 'maintenance:read', 'attachments:read',
     'qr:scan',
+    'task_templates:read', 'tasks:read', 'tasks:verify', 'task_events:read',
   ],
   supervisor: [
     'branches:read', 'users:read',
     'areas:read', 'assets:read', 'asset_events:read',
     'maintenance:read', 'attachments:read', 'qr:scan',
+    'task_templates:read', 'tasks:read', 'tasks:write', 'tasks:transition',
+    'tasks:assign', 'tasks:comment', 'tasks:time', 'task_events:read',
   ],
   inspector: [
     'branches:read', 'areas:read', 'assets:read', 'asset_events:read',
     'attachments:read', 'qr:scan',
+    'task_templates:read', 'tasks:read', 'tasks:transition',
+    'tasks:comment', 'tasks:time', 'task_events:read',
   ],
   employee: [
     'branches:read', 'areas:read', 'assets:read', 'qr:scan',
+    'tasks:read', 'tasks:transition', 'tasks:comment', 'tasks:time',
   ],
 };

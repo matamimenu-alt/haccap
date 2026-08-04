@@ -124,6 +124,69 @@
   "operations": {
     "welcomeCard": "Phase 2 — Operations Core. Every downstream module (tasks, inspections, HACCP, municipality) hangs off this asset layer."
   },
+  "tasks": {
+    "title": "Tasks",
+    "add": "New task",
+    "mine": "Assigned to me",
+    "overdue": "Overdue",
+    "empty": "No tasks yet",
+    "emptyHint": "Tasks come from maintenance schedules, inspections, or you can add them manually.",
+    "kind": {
+      "maintenance": "Maintenance",
+      "inspection_followup": "Inspection follow-up",
+      "capa_action": "CAPA action",
+      "incident_response": "Incident response",
+      "compliance": "Compliance",
+      "sanitation": "Sanitation",
+      "training": "Training",
+      "safety_check": "Safety check",
+      "calibration": "Calibration",
+      "ad_hoc": "Ad-hoc",
+      "other": "Other"
+    },
+    "status": {
+      "draft": "Draft",
+      "open": "Open",
+      "scheduled": "Scheduled",
+      "in_progress": "In progress",
+      "blocked": "Blocked",
+      "in_review": "In review",
+      "completed": "Completed",
+      "verified": "Verified",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent",
+      "critical": "Critical"
+    },
+    "actions": {
+      "start": "Start",
+      "submit": "Submit for review",
+      "complete": "Complete",
+      "verify": "Verify",
+      "cancel": "Cancel",
+      "block": "Block"
+    },
+    "detail": {
+      "overview": "Overview",
+      "checklist": "Checklist",
+      "comments": "Comments",
+      "attachments": "Attachments",
+      "history": "History",
+      "dependencies": "Dependencies",
+      "time": "Time"
+    },
+    "templates": {
+      "title": "Task templates",
+      "add": "Add template"
+    },
+    "dueAt": "Due",
+    "assignedTo": "Assigned to",
+    "materialize": "Materialize now"
+  },
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome, {{name}}",

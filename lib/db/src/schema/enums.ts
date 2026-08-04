@@ -197,3 +197,92 @@ export const maintenanceKindEnum = pgEnum('maintenance_kind', [
 
 export const riskLevelEnum = pgEnum('risk_level', ['none', 'low', 'medium', 'high', 'critical']);
 
+/* ---------------------------------------------------------------
+ * Phase 3 — Task Engine
+ * ------------------------------------------------------------- */
+
+// The nature of the work item — separate from lifecycle status. Downstream
+// phases (Inspections, HACCP, Incidents) will use these kinds when creating
+// tasks, so the enum is defined ahead of their arrival.
+export const taskKindEnum = pgEnum('task_kind', [
+  'maintenance',
+  'inspection_followup',
+  'capa_action',
+  'incident_response',
+  'compliance',
+  'sanitation',
+  'training',
+  'safety_check',
+  'calibration',
+  'ad_hoc',
+  'other',
+]);
+
+// Lifecycle. "overdue" is computed at query time, not stored.
+export const taskStatusEnum = pgEnum('task_status', [
+  'draft',
+  'open',
+  'scheduled',
+  'in_progress',
+  'blocked',
+  'in_review',
+  'completed',
+  'verified',
+  'cancelled',
+]);
+
+export const taskPriorityEnum = pgEnum('task_priority', [
+  'low',
+  'normal',
+  'high',
+  'urgent',
+  'critical',
+]);
+
+// Where a task came from. Machine-consumable — Phase 4/6/8 populate these
+// values when creating tasks. `source_id` on tasks points back to the origin
+// row (schedule id, inspection id, CCP deviation id, etc.).
+export const taskSourceEnum = pgEnum('task_source', [
+  'manual',
+  'maintenance_schedule',
+  'inspection',
+  'ccp_deviation',
+  'incident',
+  'system',
+  'ai',
+]);
+
+// Immutable event log types for the task timeline. Extend by adding — never
+// mutate an existing meaning; AI trainers depend on stable semantics.
+export const taskEventTypeEnum = pgEnum('task_event_type', [
+  'created',
+  'updated',
+  'assigned',
+  'unassigned',
+  'accepted',
+  'status_changed',
+  'priority_changed',
+  'scheduled',
+  'rescheduled',
+  'started',
+  'paused',
+  'blocked',
+  'unblocked',
+  'checklist_item_completed',
+  'checklist_item_uncompleted',
+  'comment_added',
+  'evidence_added',
+  'evidence_removed',
+  'submitted_for_review',
+  'completed',
+  'verified',
+  'rejected',
+  'cancelled',
+  'dependency_added',
+  'dependency_removed',
+  'time_logged',
+  'note_added',
+  'ai_insight_added',
+  'reassigned',
+]);
+

@@ -18,6 +18,9 @@ import {
   users, roles, permissions, rolePermissions, userRoles,
   // Phase 2
   areas, assetCategories, suppliers, assets, assetQrCodes, assetTags,
+  maintenanceSchedules,
+  // Phase 3
+  taskTemplates,
 } from './schema/index.js';
 import { SYSTEM_ROLES, PERMISSIONS, ROLE_DEFAULT_PERMISSIONS } from '@rcos/shared';
 
@@ -497,6 +500,120 @@ async function seed() {
       });
     }
     console.log(`  ✓ ${assetSpecs.length} demo assets seeded at Riyadh Olaya`);
+  }
+
+  /* -------------------------------------------------------------
+   * Phase 3 — Task Engine seed
+   * ----------------------------------------------------------- */
+  console.log('\n🌱 Seeding Task Engine…');
+
+  // Task templates
+  const taskTemplateSpecs = [
+    {
+      key: 'walkin_cooler_monthly',
+      titleAr: 'صيانة شهرية لغرفة التبريد',
+      titleEn: 'Monthly walk-in cooler maintenance',
+      description: 'Verify temp, inspect gaskets, clean condenser, check refrigerant.',
+      kind: 'maintenance' as const,
+      defaultPriority: 'high' as const,
+      defaultRisk: 'high' as const,
+      estimatedDurationMinutes: 45,
+      requiresEvidence: true,
+      requiresVerification: true,
+      checklistItems: [
+        { key: 'temp_check',       labelAr: 'قياس الحرارة (0-4°م)', labelEn: 'Verify temperature (0-4°C)',   required: true,  type: 'number' },
+        { key: 'gaskets',          labelAr: 'فحص العوازل',           labelEn: 'Inspect door gaskets',         required: true,  type: 'checkbox' },
+        { key: 'condenser_clean',  labelAr: 'تنظيف المكثف',          labelEn: 'Clean condenser coils',        required: true,  type: 'checkbox' },
+        { key: 'refrigerant',      labelAr: 'فحص المبرد',            labelEn: 'Check refrigerant level',      required: false, type: 'checkbox' },
+        { key: 'defrost_drain',    labelAr: 'فحص صرف مياه الإذابة',  labelEn: 'Inspect defrost drain',        required: false, type: 'checkbox' },
+      ],
+      requiredAttachments: [
+        { kind: 'photo', minCount: 1, labelAr: 'صورة قراءة الحرارة', labelEn: 'Temperature reading photo' },
+      ],
+      aiHints: { relatedCategoryKeys: ['refrigeration.walk_in_cooler'], failureRiskFactors: ['high_ambient', 'seal_wear'] },
+    },
+    {
+      key: 'fire_extinguisher_monthly',
+      titleAr: 'الفحص الشهري لطفاية الحريق',
+      titleEn: 'Monthly fire extinguisher inspection',
+      description: 'Verify pressure, seal, and physical condition.',
+      kind: 'safety_check' as const,
+      defaultPriority: 'high' as const,
+      defaultRisk: 'critical' as const,
+      estimatedDurationMinutes: 10,
+      requiresEvidence: true,
+      requiresVerification: true,
+      checklistItems: [
+        { key: 'pressure_ok',  labelAr: 'مؤشر الضغط في المنطقة الخضراء', labelEn: 'Pressure gauge in green', required: true, type: 'checkbox' },
+        { key: 'seal_intact',  labelAr: 'الختم سليم',                   labelEn: 'Safety seal intact',       required: true, type: 'checkbox' },
+        { key: 'no_damage',    labelAr: 'خالٍ من الأضرار الظاهرة',       labelEn: 'No visible damage',        required: true, type: 'checkbox' },
+        { key: 'tag_updated',  labelAr: 'بطاقة الفحص محدثة',            labelEn: 'Inspection tag updated',   required: true, type: 'checkbox' },
+      ],
+      requiredAttachments: [
+        { kind: 'photo', minCount: 1, labelAr: 'صورة الطفاية', labelEn: 'Extinguisher photo' },
+      ],
+      aiHints: { compliance: ['civil_defense'], relatedCategoryKeys: ['safety.fire_extinguisher'] },
+    },
+    {
+      key: 'shawarma_ccp_daily',
+      titleAr: 'مراقبة نقطة التحكم الحرجة - شاورما',
+      titleEn: 'Daily shawarma CCP monitoring',
+      description: 'Verify cone core temperature ≥75°C at peak service.',
+      kind: 'compliance' as const,
+      defaultPriority: 'critical' as const,
+      defaultRisk: 'critical' as const,
+      estimatedDurationMinutes: 5,
+      requiresEvidence: true,
+      requiresVerification: false,
+      checklistItems: [
+        { key: 'core_temp',      labelAr: 'حرارة قلب المخروط (≥75°م)', labelEn: 'Cone core temperature (≥75°C)', required: true, type: 'number' },
+        { key: 'holding_temp',   labelAr: 'حرارة الحفظ (≥60°م)',        labelEn: 'Holding temperature (≥60°C)',   required: true, type: 'number' },
+      ],
+      requiredAttachments: [
+        { kind: 'photo', minCount: 1, labelAr: 'صورة الميزان الحراري', labelEn: 'Thermometer reading photo' },
+      ],
+      aiHints: { compliance: ['haccp', 'sfda'], relatedCategoryKeys: ['cooking.shawarma_machine'], ccpTemperature: 75 },
+    },
+  ];
+
+  for (const spec of taskTemplateSpecs) {
+    await db
+      .insert(taskTemplates)
+      .values({ ...spec, companyId: company.id })
+      .onConflictDoNothing({ target: [taskTemplates.companyId, taskTemplates.key] });
+  }
+  console.log(`  ✓ ${taskTemplateSpecs.length} task templates seeded`);
+
+  // Wire one due maintenance schedule to the walk-in cooler asset so the
+  // materialization tick produces a visible task on first run.
+  const [wicAsset] = await db.select().from(assets).where(and(eq(assets.companyId, company.id), eq(assets.code, 'WIC-01'))).limit(1);
+  const [wicTpl] = await db.select({ id: taskTemplates.id }).from(taskTemplates).where(and(eq(taskTemplates.companyId, company.id), eq(taskTemplates.key, 'walkin_cooler_monthly'))).limit(1);
+  if (wicAsset) {
+    const [existing] = await db
+      .select({ id: maintenanceSchedules.id })
+      .from(maintenanceSchedules)
+      .where(and(eq(maintenanceSchedules.companyId, company.id), eq(maintenanceSchedules.assetId, wicAsset.id)))
+      .limit(1);
+    if (!existing) {
+      const now = new Date();
+      const nextDue = new Date(now.getTime() + 30 * 60 * 1000); // 30 min from now — visible on first tick
+      await db.insert(maintenanceSchedules).values({
+        companyId: company.id,
+        assetId: wicAsset.id,
+        titleAr: 'صيانة شهرية لغرفة التبريد',
+        titleEn: 'Monthly walk-in cooler maintenance',
+        kind: 'preventive',
+        frequency: 'monthly',
+        intervalCount: 1,
+        riskIfSkipped: 'high',
+        startsOn: now,
+        nextDueAt: nextDue,
+        estimatedDurationMinutes: 45,
+        requiresShutdown: false,
+        playbook: { templateKey: wicTpl?.id ? 'walkin_cooler_monthly' : undefined },
+      });
+      console.log('  ✓ 1 maintenance schedule wired (walk-in cooler, due in 30 min)');
+    }
   }
 
   console.log('\n✅ Seed complete.');

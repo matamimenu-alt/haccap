@@ -20,6 +20,13 @@ const schema = z.object({
   MAX_UPLOAD_MB: z.coerce.number().int().positive().default(25),
   // QR
   QR_SCAN_BASE_URL: z.string().default('http://localhost:5173/s'),
+  // Jobs (Phase 3+)
+  JOBS_ENABLED: z
+    .string()
+    .default('true')
+    .transform((v) => v === 'true' || v === '1'),
+  JOBS_MATERIALIZER_INTERVAL_SEC: z.coerce.number().int().positive().default(300),
+  JOBS_MATERIALIZER_HORIZON_HOURS: z.coerce.number().int().positive().default(24),
 });
 
 const parsed = schema.safeParse(process.env);

@@ -124,6 +124,69 @@
   "operations": {
     "welcomeCard": "المرحلة 2 — العمليات الأساسية. جميع الوحدات القادمة (المهام، التفتيش، الهاسب، البلدية) تعتمد على قاعدة الأصول هذه."
   },
+  "tasks": {
+    "title": "المهام",
+    "add": "مهمة جديدة",
+    "mine": "مسندة إليّ",
+    "overdue": "متأخرة",
+    "empty": "لا توجد مهام بعد",
+    "emptyHint": "تُنشأ المهام من خطط الصيانة أو التفتيش أو يمكنك إضافتها يدويًا.",
+    "kind": {
+      "maintenance": "صيانة",
+      "inspection_followup": "متابعة تفتيش",
+      "capa_action": "إجراء تصحيحي",
+      "incident_response": "استجابة حادث",
+      "compliance": "امتثال",
+      "sanitation": "نظافة",
+      "training": "تدريب",
+      "safety_check": "فحص سلامة",
+      "calibration": "معايرة",
+      "ad_hoc": "طارئ",
+      "other": "أخرى"
+    },
+    "status": {
+      "draft": "مسودة",
+      "open": "مفتوحة",
+      "scheduled": "مجدولة",
+      "in_progress": "قيد التنفيذ",
+      "blocked": "متعثرة",
+      "in_review": "قيد المراجعة",
+      "completed": "مكتملة",
+      "verified": "مُدققة",
+      "cancelled": "ملغاة"
+    },
+    "priority": {
+      "low": "منخفضة",
+      "normal": "عادية",
+      "high": "عالية",
+      "urgent": "عاجلة",
+      "critical": "حرجة"
+    },
+    "actions": {
+      "start": "بدء",
+      "submit": "إرسال للمراجعة",
+      "complete": "إتمام",
+      "verify": "تدقيق",
+      "cancel": "إلغاء",
+      "block": "توقف"
+    },
+    "detail": {
+      "overview": "نظرة عامة",
+      "checklist": "القائمة",
+      "comments": "التعليقات",
+      "attachments": "المرفقات",
+      "history": "السجل",
+      "dependencies": "الاعتماديات",
+      "time": "الوقت"
+    },
+    "templates": {
+      "title": "قوالب المهام",
+      "add": "إضافة قالب"
+    },
+    "dueAt": "الاستحقاق",
+    "assignedTo": "مسندة إلى",
+    "materialize": "توليد الآن"
+  },
   "dashboard": {
     "title": "لوحة التحكم",
     "welcome": "أهلاً {{name}}",
