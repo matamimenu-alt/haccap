@@ -21,6 +21,8 @@ import {
   maintenanceSchedules,
   // Phase 3
   taskTemplates,
+  // Phase 4
+  inspectionTemplates,
 } from './schema/index.js';
 import { SYSTEM_ROLES, PERMISSIONS, ROLE_DEFAULT_PERMISSIONS } from '@rcos/shared';
 
@@ -615,6 +617,87 @@ async function seed() {
       console.log('  ✓ 1 maintenance schedule wired (walk-in cooler, due in 30 min)');
     }
   }
+
+  /* -------------------------------------------------------------
+   * Phase 4 — Inspection Engine seed
+   * ----------------------------------------------------------- */
+  console.log('\n🌱 Seeding Inspection Engine…');
+
+  const municipalityKitchenSections = [
+    { key: 'personal',  labelAr: 'النظافة الشخصية للعاملين', labelEn: 'Personal hygiene',     weight: 2, order: 1 },
+    { key: 'facility',  labelAr: 'حالة المنشأة',              labelEn: 'Facility condition',   weight: 1, order: 2 },
+    { key: 'storage',   labelAr: 'تخزين الأغذية',             labelEn: 'Food storage',         weight: 3, order: 3 },
+    { key: 'temp',      labelAr: 'مراقبة الحرارة',            labelEn: 'Temperature control',  weight: 3, order: 4 },
+    { key: 'cleaning',  labelAr: 'التنظيف والتعقيم',          labelEn: 'Cleaning & sanitation',weight: 2, order: 5 },
+    { key: 'pest',      labelAr: 'مكافحة الآفات',             labelEn: 'Pest control',         weight: 2, order: 6 },
+    { key: 'safety',    labelAr: 'السلامة',                    labelEn: 'Safety',              weight: 2, order: 7 },
+  ];
+  const municipalityKitchenItems = [
+    { key: 'p1', sectionKey: 'personal',  labelAr: 'ارتداء الزي والقفازات', labelEn: 'Proper uniform + gloves', type: 'yesno' as const, weight: 1, critical: false },
+    { key: 'p2', sectionKey: 'personal',  labelAr: 'شهادات صحية سارية',      labelEn: 'Valid health certificates', type: 'yesno' as const, weight: 2, critical: true },
+    { key: 'p3', sectionKey: 'personal',  labelAr: 'غسيل الأيدي المتكرر',    labelEn: 'Frequent handwashing',      type: 'yesno' as const, weight: 1, critical: false },
+    { key: 'f1', sectionKey: 'facility',  labelAr: 'حالة الجدران والأرضيات',  labelEn: 'Walls + floors condition',  type: 'scale5' as const, weight: 1, critical: false },
+    { key: 'f2', sectionKey: 'facility',  labelAr: 'التهوية والإضاءة',       labelEn: 'Ventilation + lighting',    type: 'scale5' as const, weight: 1, critical: false },
+    { key: 's1', sectionKey: 'storage',   labelAr: 'فصل الخام عن المطهو',   labelEn: 'Raw / cooked separation',   type: 'yesno' as const, weight: 3, critical: true },
+    { key: 's2', sectionKey: 'storage',   labelAr: 'تواريخ الصلاحية',        labelEn: 'Expiry dates on all items', type: 'yesno' as const, weight: 2, critical: true },
+    { key: 't1', sectionKey: 'temp',      labelAr: 'حرارة غرفة التبريد (≤4°م)', labelEn: 'Walk-in cooler ≤ 4°C',   type: 'numeric' as const, weight: 3, critical: true, passIf: { op: 'lte' as const, value: 4 }, unit: '°C' },
+    { key: 't2', sectionKey: 'temp',      labelAr: 'حرارة التجميد (≤-18°م)',   labelEn: 'Freezer ≤ -18°C',        type: 'numeric' as const, weight: 3, critical: true, passIf: { op: 'lte' as const, value: -18 }, unit: '°C' },
+    { key: 't3', sectionKey: 'temp',      labelAr: 'حرارة حفظ الطهو (≥60°م)', labelEn: 'Hot hold ≥ 60°C',        type: 'numeric' as const, weight: 2, critical: false, passIf: { op: 'gte' as const, value: 60 }, unit: '°C' },
+    { key: 'c1', sectionKey: 'cleaning',  labelAr: 'برنامج تنظيف موثق',       labelEn: 'Documented cleaning program', type: 'yesno' as const, weight: 1, critical: false },
+    { key: 'c2', sectionKey: 'cleaning',  labelAr: 'مواد التعقيم متاحة',      labelEn: 'Sanitizer available + labeled', type: 'yesno' as const, weight: 2, critical: false },
+    { key: 'pc1', sectionKey: 'pest',      labelAr: 'عقد مكافحة آفات نشط',    labelEn: 'Active pest-control contract', type: 'yesno' as const, weight: 2, critical: false },
+    { key: 'pc2', sectionKey: 'pest',      labelAr: 'لا آثار للآفات',         labelEn: 'No signs of pests',          type: 'yesno' as const, weight: 3, critical: true },
+    { key: 'sa1', sectionKey: 'safety',    labelAr: 'طفايات الحريق سارية',    labelEn: 'Fire extinguishers valid',   type: 'yesno' as const, weight: 2, critical: true },
+    { key: 'sa2', sectionKey: 'safety',    labelAr: 'مخارج الطوارئ سالكة',    labelEn: 'Emergency exits clear',     type: 'yesno' as const, weight: 2, critical: true },
+  ];
+
+  const inspectionTemplateSpecs = [
+    {
+      key: 'municipality_kitchen_v1',
+      version: 1,
+      kind: 'municipality_prep' as const,
+      titleAr: 'قائمة تفتيش البلدية — المطبخ',
+      titleEn: 'Municipality Kitchen Inspection',
+      description: 'Standard municipality kitchen inspection checklist adapted for Saudi restaurants.',
+      issuingAuthority: 'Riyadh Municipality',
+      regulatoryRef: 'Food Safety Guideline 2024',
+      passThreshold: 85,
+      sections: municipalityKitchenSections,
+      items: municipalityKitchenItems,
+      scopeTargets: ['branch'],
+      aiHints: { compliance: ['municipality', 'sfda'], relatedCategoryKeys: ['refrigeration', 'cooking', 'safety', 'pest_control'] },
+      isSystem: false,
+    },
+    {
+      key: 'daily_walkthrough_v1',
+      version: 1,
+      kind: 'daily_walkthrough' as const,
+      titleAr: 'الجولة اليومية للمشرف',
+      titleEn: 'Daily supervisor walkthrough',
+      description: 'Quick daily walkthrough capturing hygiene, temperatures, and safety highlights.',
+      passThreshold: 80,
+      sections: [
+        { key: 'open',  labelAr: 'الفتح',    labelEn: 'Opening',        order: 1 },
+        { key: 'peak',  labelAr: 'الذروة',   labelEn: 'Peak service',   order: 2 },
+        { key: 'close', labelAr: 'الإغلاق', labelEn: 'Closing',        order: 3 },
+      ],
+      items: [
+        { key: 'o1', sectionKey: 'open',  labelAr: 'حرارة غرفة التبريد صباحًا', labelEn: 'Cooler AM temperature', type: 'numeric' as const, weight: 1, passIf: { op: 'lte' as const, value: 4 }, unit: '°C' },
+        { key: 'p1', sectionKey: 'peak',  labelAr: 'حرارة الشاورما (≥75°م)',    labelEn: 'Shawarma core (≥75°C)', type: 'numeric' as const, weight: 3, critical: true, passIf: { op: 'gte' as const, value: 75 }, unit: '°C' },
+        { key: 'c1', sectionKey: 'close', labelAr: 'مطبخ نظيف عند الإغلاق',    labelEn: 'Kitchen clean at close', type: 'yesno' as const, weight: 1 },
+      ],
+      scopeTargets: ['branch'],
+      aiHints: { compliance: ['haccp'], relatedCategoryKeys: ['refrigeration', 'cooking.shawarma_machine'] },
+    },
+  ];
+
+  for (const spec of inspectionTemplateSpecs) {
+    await db
+      .insert(inspectionTemplates)
+      .values({ ...spec, companyId: company.id })
+      .onConflictDoNothing({ target: [inspectionTemplates.companyId, inspectionTemplates.key, inspectionTemplates.version] });
+  }
+  console.log(`  ✓ ${inspectionTemplateSpecs.length} inspection templates seeded`);
 
   console.log('\n✅ Seed complete.');
   console.log('   Log in at http://localhost:5173/login with:');

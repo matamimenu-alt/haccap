@@ -20,6 +20,10 @@ import { qrRouter } from './qr.js';
 import { taskTemplatesRouter } from './task-templates.js';
 import { tasksRouter } from './tasks.js';
 import { jobsRouter } from './jobs.js';
+// Phase 4 — Inspection Engine
+import { inspectionTemplatesRouter } from './inspection-templates.js';
+import { inspectionsRouter } from './inspections.js';
+import { findingsRouter } from './findings.js';
 
 export const v1Router: Router = Router();
 
@@ -51,3 +55,8 @@ v1Router.use('/qr', qrRouter);
 v1Router.use('/task-templates', taskTemplatesRouter);
 v1Router.use('/tasks', tasksRouter);
 v1Router.use('/jobs', jobsRouter);
+
+// Phase 4 — Inspection Engine
+v1Router.use('/inspection-templates', inspectionTemplatesRouter);
+v1Router.use('/inspections', inspectionsRouter);
+v1Router.use('/findings', findingsRouter);

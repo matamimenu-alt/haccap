@@ -39,6 +39,8 @@
     "assetCategories": "تصنيفات الأصول",
     "suppliers": "الموردون",
     "maintenance": "الصيانة",
+    "inspections": "التفتيش",
+    "findings": "الملاحظات",
     "compliance": "الامتثال",
     "haccp": "الهاسب",
     "foodSafety": "سلامة الغذاء",
@@ -186,6 +188,63 @@
     "dueAt": "الاستحقاق",
     "assignedTo": "مسندة إلى",
     "materialize": "توليد الآن"
+  },
+  "inspections": {
+    "title": "التفتيش",
+    "add": "تفتيش جديد",
+    "templates": "قوالب التفتيش",
+    "findings": "الملاحظات",
+    "kind": {
+      "internal_audit": "تدقيق داخلي",
+      "municipality_prep": "تحضير للبلدية",
+      "municipality_visit": "زيارة البلدية",
+      "sfda_audit": "تدقيق الغذاء والدواء",
+      "haccp_audit": "تدقيق الهاسب",
+      "food_safety_check": "فحص سلامة الغذاء",
+      "daily_walkthrough": "الجولة اليومية",
+      "safety_audit": "تدقيق السلامة",
+      "supplier_audit": "تدقيق الموردين",
+      "training_audit": "تدقيق التدريب",
+      "other": "أخرى"
+    },
+    "status": {
+      "scheduled": "مجدولة",
+      "in_progress": "قيد التنفيذ",
+      "submitted": "مقدمة",
+      "finalized": "مُعتمدة",
+      "cancelled": "ملغاة"
+    },
+    "response": {
+      "pass": "ناجح",
+      "fail": "غير مطابق",
+      "partial": "جزئي",
+      "not_applicable": "لا ينطبق",
+      "observed": "ملاحظ"
+    },
+    "finding": {
+      "severity": {
+        "observation": "ملاحظة",
+        "minor": "طفيفة",
+        "major": "كبرى",
+        "critical": "حرجة"
+      },
+      "status": {
+        "open": "مفتوحة",
+        "in_capa": "قيد المعالجة",
+        "resolved": "معالَجة",
+        "accepted_risk": "قبول المخاطرة",
+        "closed": "مغلقة",
+        "reopened": "معاد فتحها"
+      }
+    },
+    "actions": {
+      "submit": "تقديم",
+      "finalize": "اعتماد"
+    },
+    "overallScore": "النتيجة الإجمالية",
+    "criticalFailures": "إخفاقات حرجة",
+    "notes": "ملاحظات",
+    "verdict": "القرار"
   },
   "dashboard": {
     "title": "لوحة التحكم",

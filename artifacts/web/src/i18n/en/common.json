@@ -39,6 +39,8 @@
     "assetCategories": "Asset categories",
     "suppliers": "Suppliers",
     "maintenance": "Maintenance",
+    "inspections": "Inspections",
+    "findings": "Findings",
     "compliance": "Compliance",
     "haccp": "HACCP",
     "foodSafety": "Food safety",
@@ -186,6 +188,63 @@
     "dueAt": "Due",
     "assignedTo": "Assigned to",
     "materialize": "Materialize now"
+  },
+  "inspections": {
+    "title": "Inspections",
+    "add": "New inspection",
+    "templates": "Inspection templates",
+    "findings": "Findings",
+    "kind": {
+      "internal_audit": "Internal audit",
+      "municipality_prep": "Municipality prep",
+      "municipality_visit": "Municipality visit",
+      "sfda_audit": "SFDA audit",
+      "haccp_audit": "HACCP audit",
+      "food_safety_check": "Food safety check",
+      "daily_walkthrough": "Daily walkthrough",
+      "safety_audit": "Safety audit",
+      "supplier_audit": "Supplier audit",
+      "training_audit": "Training audit",
+      "other": "Other"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "in_progress": "In progress",
+      "submitted": "Submitted",
+      "finalized": "Finalized",
+      "cancelled": "Cancelled"
+    },
+    "response": {
+      "pass": "Pass",
+      "fail": "Fail",
+      "partial": "Partial",
+      "not_applicable": "N/A",
+      "observed": "Observed"
+    },
+    "finding": {
+      "severity": {
+        "observation": "Observation",
+        "minor": "Minor",
+        "major": "Major",
+        "critical": "Critical"
+      },
+      "status": {
+        "open": "Open",
+        "in_capa": "In CAPA",
+        "resolved": "Resolved",
+        "accepted_risk": "Accepted risk",
+        "closed": "Closed",
+        "reopened": "Reopened"
+      }
+    },
+    "actions": {
+      "submit": "Submit",
+      "finalize": "Finalize"
+    },
+    "overallScore": "Overall score",
+    "criticalFailures": "Critical failures",
+    "notes": "Notes",
+    "verdict": "Verdict"
   },
   "dashboard": {
     "title": "Dashboard",

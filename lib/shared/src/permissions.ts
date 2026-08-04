@@ -53,6 +53,16 @@ export const PERMISSIONS = {
   tasks_time:               { key: 'tasks:time',               module: 'tasks', action: 'time' },
   task_events_read:         { key: 'task_events:read',         module: 'tasks', action: 'read' },
   jobs_admin:               { key: 'jobs:admin',               module: 'tasks', action: 'admin' },
+
+  // Phase 4 — Inspection Engine
+  inspection_templates_read:  { key: 'inspection_templates:read',  module: 'inspections', action: 'read' },
+  inspection_templates_write: { key: 'inspection_templates:write', module: 'inspections', action: 'write' },
+  inspections_read:           { key: 'inspections:read',           module: 'inspections', action: 'read' },
+  inspections_write:          { key: 'inspections:write',          module: 'inspections', action: 'write' },
+  inspections_conduct:        { key: 'inspections:conduct',        module: 'inspections', action: 'conduct' },
+  inspections_finalize:       { key: 'inspections:finalize',       module: 'inspections', action: 'finalize' },
+  findings_read:              { key: 'findings:read',              module: 'inspections', action: 'read' },
+  findings_write:             { key: 'findings:write',             module: 'inspections', action: 'write' },
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]['key'];
@@ -85,6 +95,10 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'tasks:read', 'tasks:write', 'tasks:transition', 'tasks:verify',
     'tasks:assign', 'tasks:comment', 'tasks:time',
     'task_events:read', 'jobs:admin',
+    // Phase 4
+    'inspection_templates:read', 'inspection_templates:write',
+    'inspections:read', 'inspections:write', 'inspections:conduct', 'inspections:finalize',
+    'findings:read', 'findings:write',
   ],
   area_manager: [
     'companies:read', 'brands:read', 'branches:read', 'branches:write',
@@ -103,6 +117,9 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'tasks:read', 'tasks:write', 'tasks:transition', 'tasks:verify',
     'tasks:assign', 'tasks:comment', 'tasks:time',
     'task_events:read',
+    'inspection_templates:read',
+    'inspections:read', 'inspections:conduct',
+    'findings:read', 'findings:write',
   ],
   branch_manager: [
     'companies:read', 'brands:read', 'branches:read',
@@ -121,6 +138,9 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'tasks:read', 'tasks:write', 'tasks:transition', 'tasks:verify',
     'tasks:assign', 'tasks:comment', 'tasks:time',
     'task_events:read',
+    'inspection_templates:read',
+    'inspections:read', 'inspections:conduct',
+    'findings:read', 'findings:write',
   ],
   food_safety_officer: [
     'branches:read', 'users:read',
@@ -135,6 +155,9 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'task_templates:read', 'task_templates:write',
     'tasks:read', 'tasks:write', 'tasks:transition',
     'tasks:comment', 'tasks:time', 'task_events:read',
+    'inspection_templates:read', 'inspection_templates:write',
+    'inspections:read', 'inspections:write', 'inspections:conduct', 'inspections:finalize',
+    'findings:read', 'findings:write',
   ],
   internal_auditor: [
     'companies:read', 'brands:read', 'branches:read', 'users:read',
@@ -144,6 +167,9 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'warranties:read', 'maintenance:read', 'attachments:read',
     'qr:scan',
     'task_templates:read', 'tasks:read', 'tasks:verify', 'task_events:read',
+    'inspection_templates:read',
+    'inspections:read', 'inspections:conduct', 'inspections:finalize',
+    'findings:read',
   ],
   supervisor: [
     'branches:read', 'users:read',
@@ -157,6 +183,9 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'attachments:read', 'qr:scan',
     'task_templates:read', 'tasks:read', 'tasks:transition',
     'tasks:comment', 'tasks:time', 'task_events:read',
+    'inspection_templates:read',
+    'inspections:read', 'inspections:conduct',
+    'findings:read',
   ],
   employee: [
     'branches:read', 'areas:read', 'assets:read', 'qr:scan',

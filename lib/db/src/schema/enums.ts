@@ -252,6 +252,75 @@ export const taskSourceEnum = pgEnum('task_source', [
   'ai',
 ]);
 
+/* ---------------------------------------------------------------
+ * Phase 4 — Inspection Engine
+ * ------------------------------------------------------------- */
+
+export const inspectionKindEnum = pgEnum('inspection_kind', [
+  'internal_audit',
+  'municipality_prep',   // dry-run before a municipality visit
+  'municipality_visit',  // an actual municipality inspection (recorded)
+  'sfda_audit',
+  'haccp_audit',
+  'food_safety_check',
+  'daily_walkthrough',
+  'safety_audit',
+  'supplier_audit',
+  'training_audit',
+  'other',
+]);
+
+export const inspectionStatusEnum = pgEnum('inspection_status', [
+  'scheduled',
+  'in_progress',
+  'submitted',   // finished by inspector, pending finalization
+  'finalized',   // scored + immutable
+  'cancelled',
+]);
+
+export const inspectionResponseValueEnum = pgEnum('inspection_response_value', [
+  'pass',
+  'fail',
+  'partial',
+  'not_applicable',
+  'observed',    // an observed number/text answer (see numeric_value / text_value)
+]);
+
+export const findingSeverityEnum = pgEnum('finding_severity', [
+  'observation',
+  'minor',
+  'major',
+  'critical',
+]);
+
+export const findingStatusEnum = pgEnum('finding_status', [
+  'open',
+  'in_capa',
+  'resolved',
+  'accepted_risk',
+  'closed',
+  'reopened',
+]);
+
+export const inspectionEventTypeEnum = pgEnum('inspection_event_type', [
+  'created',
+  'scheduled',
+  'started',
+  'response_recorded',
+  'response_updated',
+  'evidence_added',
+  'evidence_removed',
+  'finding_created',
+  'finding_updated',
+  'section_completed',
+  'submitted',
+  'finalized',
+  'cancelled',
+  'reopened',
+  'note_added',
+  'ai_insight_added',
+]);
+
 // Immutable event log types for the task timeline. Extend by adding — never
 // mutate an existing meaning; AI trainers depend on stable semantics.
 export const taskEventTypeEnum = pgEnum('task_event_type', [

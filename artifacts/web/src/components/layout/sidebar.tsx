@@ -47,10 +47,10 @@ const sections: NavSection[] = [
   {
     titleKey: 'nav.compliance',
     items: [
-      { to: '/compliance', icon: ClipboardList, labelKey: 'nav.compliance', comingSoon: true },
+      { to: '/inspections',        icon: ClipboardList, labelKey: 'nav.inspections' },
+      { to: '/findings',           icon: AlertOctagon,   labelKey: 'nav.findings' },
       { to: '/haccp',      icon: ShieldCheck,    labelKey: 'nav.haccp',      comingSoon: true },
       { to: '/food-safety',icon: ThermometerSun, labelKey: 'nav.foodSafety', comingSoon: true },
-      { to: '/capa',       icon: AlertOctagon,   labelKey: 'nav.capa',       comingSoon: true },
       { to: '/reports',    icon: FileBarChart2,  labelKey: 'nav.reports',    comingSoon: true },
     ],
   },

@@ -25,6 +25,12 @@ import { TasksPage } from '@/pages/tasks/TasksPage';
 import { TaskDetailPage } from '@/pages/tasks/TaskDetailPage';
 import { TaskNewPage } from '@/pages/tasks/TaskNewPage';
 import { TaskTemplatesPage } from '@/pages/tasks/TaskTemplatesPage';
+// Phase 4 — Inspection Engine
+import { InspectionsPage } from '@/pages/inspections/InspectionsPage';
+import { InspectionNewPage } from '@/pages/inspections/InspectionNewPage';
+import { InspectionDetailPage } from '@/pages/inspections/InspectionDetailPage';
+import { InspectionTemplatesPage } from '@/pages/inspections/InspectionTemplatesPage';
+import { FindingsPage } from '@/pages/inspections/FindingsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,6 +77,12 @@ export default function App() {
             <Route path="/tasks/new" element={<TaskNewPage />} />
             <Route path="/tasks/templates" element={<TaskTemplatesPage />} />
             <Route path="/tasks/:id" element={<TaskDetailPage />} />
+            {/* Phase 4 — Inspection Engine */}
+            <Route path="/inspections" element={<InspectionsPage />} />
+            <Route path="/inspections/new" element={<InspectionNewPage />} />
+            <Route path="/inspections/:id" element={<InspectionDetailPage />} />
+            <Route path="/inspection-templates" element={<InspectionTemplatesPage />} />
+            <Route path="/findings" element={<FindingsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -29,3 +29,9 @@ export * from './task-comments.js';
 export * from './task-events.js';
 export * from './task-dependencies.js';
 export * from './task-time-entries.js';
+// Phase 4 — Inspection Engine
+export * from './inspection-templates.js';
+export * from './inspections.js';
+export * from './inspection-responses.js';
+export * from './findings.js';
+export * from './inspection-events.js';
