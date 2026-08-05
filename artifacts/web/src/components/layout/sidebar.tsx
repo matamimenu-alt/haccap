@@ -50,8 +50,30 @@ const sections: NavSection[] = [
       { to: '/inspections',        icon: ClipboardList, labelKey: 'nav.inspections' },
       { to: '/findings',           icon: AlertOctagon,   labelKey: 'nav.findings' },
       { to: '/knowledge',          icon: BookOpen,       labelKey: 'nav.knowledge' },
-      { to: '/haccp',      icon: ShieldCheck,    labelKey: 'nav.haccp',      comingSoon: true },
-      { to: '/food-safety',icon: ThermometerSun, labelKey: 'nav.foodSafety', comingSoon: true },
+    ],
+  },
+  {
+    titleKey: 'nav.haccp',
+    items: [
+      { to: '/haccp/plans',            icon: ShieldCheck,   labelKey: 'nav.haccpPlans' },
+      { to: '/haccp/ccps',             icon: AlertOctagon,   labelKey: 'nav.ccps' },
+    ],
+  },
+  {
+    titleKey: 'nav.foodSafety',
+    items: [
+      { to: '/food-safety/temperature',   icon: ThermometerSun, labelKey: 'nav.temperature' },
+      { to: '/food-safety/receiving',     icon: Truck,          labelKey: 'nav.receiving' },
+      { to: '/food-safety/cleaning',      icon: Wrench,         labelKey: 'nav.cleaning' },
+      { to: '/food-safety/pest-control',  icon: AlertOctagon,   labelKey: 'nav.pestControl' },
+      { to: '/food-safety/calibration',   icon: Layers3,        labelKey: 'nav.calibration' },
+      { to: '/food-safety/certifications',icon: ShieldCheck,    labelKey: 'nav.certifications' },
+      { to: '/food-safety/batches',       icon: Boxes,          labelKey: 'nav.batches' },
+    ],
+  },
+  {
+    titleKey: 'nav.reports',
+    items: [
       { to: '/reports',    icon: FileBarChart2,  labelKey: 'nav.reports',    comingSoon: true },
     ],
   },

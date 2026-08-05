@@ -40,3 +40,16 @@ export * from './knowledge-categories.js';
 export * from './knowledge-articles.js';
 export * from './knowledge-article-versions.js';
 export * from './knowledge-article-links.js';
+// Phase 6 — HACCP + Food Safety
+export * from './haccp-plans.js';
+export * from './hazards.js';
+export * from './ccps.js';
+export * from './ccp-monitoring-logs.js';
+export * from './verification-records.js';
+export * from './temperature-logs.js';
+export * from './receiving-logs.js';
+export * from './cleaning-records.js';
+export * from './pest-control-records.js';
+export * from './calibration-records.js';
+export * from './employee-certifications.js';
+export * from './batches.js';

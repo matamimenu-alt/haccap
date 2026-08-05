@@ -253,6 +253,94 @@ export const taskSourceEnum = pgEnum('task_source', [
 ]);
 
 /* ---------------------------------------------------------------
+ * Phase 6 — HACCP + Food Safety
+ * ------------------------------------------------------------- */
+
+export const haccpPlanStatusEnum = pgEnum('haccp_plan_status', [
+  'draft',
+  'under_review',
+  'approved',
+  'active',
+  'superseded',
+  'archived',
+]);
+
+export const hazardTypeEnum = pgEnum('hazard_type', [
+  'biological',
+  'chemical',
+  'physical',
+  'allergen',
+  'radiological',
+]);
+
+export const hazardStageEnum = pgEnum('hazard_stage', [
+  'receiving',
+  'storage_cold',
+  'storage_dry',
+  'thawing',
+  'prep',
+  'cooking',
+  'holding_hot',
+  'holding_cold',
+  'cooling',
+  'reheating',
+  'service',
+  'packaging',
+  'transport',
+  'cleaning',
+  'other',
+]);
+
+export const ccpMonitoringResultEnum = pgEnum('ccp_monitoring_result', [
+  'in_limit',
+  'warning',
+  'deviation',
+  'critical_deviation',
+]);
+
+export const verificationKindEnum = pgEnum('verification_kind', [
+  'plan_review',
+  'record_review',
+  'calibration',
+  'validation_study',
+  'audit',
+  'trend_analysis',
+]);
+
+export const receivingResultEnum = pgEnum('receiving_result', [
+  'accepted',
+  'partially_accepted',
+  'rejected',
+  'quarantine',
+]);
+
+export const pestControlResultEnum = pgEnum('pest_control_result', [
+  'clear',
+  'evidence_found',
+  'infestation',
+  'treatment_applied',
+]);
+
+export const certificationStatusEnum = pgEnum('certification_status', [
+  'active',
+  'expiring_soon',
+  'expired',
+  'revoked',
+  'pending',
+]);
+
+export const batchStatusEnum = pgEnum('batch_status', [
+  'received',
+  'in_storage',
+  'in_prep',
+  'in_service',
+  'consumed',
+  'expired',
+  'recalled',
+  'discarded',
+]);
+
+/* ---------------------------------------------------------------
  * Phase 5 — Knowledge Engine
  * ------------------------------------------------------------- */
 

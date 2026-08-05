@@ -25,6 +25,8 @@ import {
   inspectionTemplates,
   // Phase 5
   knowledgeArticles, knowledgeArticleLinks, knowledgeArticleVersions, knowledgeCategories,
+  // Phase 6
+  haccpPlans, hazards, ccps,
 } from './schema/index.js';
 import { SYSTEM_ROLES, PERMISSIONS, ROLE_DEFAULT_PERMISSIONS } from '@rcos/shared';
 
@@ -1015,6 +1017,153 @@ Any sighting → create a critical incident task and notify the Food Safety Offi
     }
   }
   console.log(`  ✓ ${knArticleSpecs.length} knowledge articles seeded (published)`);
+
+  /* -------------------------------------------------------------
+   * Phase 6 — HACCP + Food Safety seed
+   * ----------------------------------------------------------- */
+  console.log('\n🌱 Seeding HACCP plan…');
+
+  const [existingPlan] = await db
+    .select({ id: haccpPlans.id })
+    .from(haccpPlans)
+    .where(and(eq(haccpPlans.companyId, company.id), eq(haccpPlans.reference, 'HACCP-SHW-001')))
+    .limit(1);
+
+  if (!existingPlan) {
+    const [plan] = await db
+      .insert(haccpPlans)
+      .values({
+        companyId: company.id,
+        reference: 'HACCP-SHW-001',
+        version: 1,
+        titleAr: 'خطة الهاسب — الشاورما',
+        titleEn: 'HACCP Plan — Shawarma',
+        description: 'Complete HACCP plan for chicken shawarma production from receiving to service.',
+        productDescription: 'Chicken shawarma prepared on vertical rotating spit, sliced and served in bread or platter.',
+        intendedUse: 'General public, all age groups, ready-to-eat.',
+        status: 'active',
+        approvedAt: new Date().toISOString().slice(0, 10),
+        effectiveFrom: new Date().toISOString().slice(0, 10),
+        reviewDueOn: new Date(Date.now() + 365 * 86_400_000).toISOString().slice(0, 10),
+        scopeProducts: [
+          { nameEn: 'Chicken Shawarma', nameAr: 'شاورما دجاج', category: 'ready_to_eat' },
+        ],
+        scopeProcesses: ['receiving', 'storage_cold', 'prep', 'cooking', 'holding_hot', 'service'],
+        teamMembers: [
+          { name: 'Khalid Al-Harbi', role: 'Food Safety Officer', responsibilities: ['Plan owner', 'Hazard analysis', 'CCP monitoring'] },
+          { name: 'Sara Al-Otaibi', role: 'Operations Director', responsibilities: ['Approval', 'Resource allocation'] },
+          { name: 'Mohammed Al-Nakheli', role: 'Company Owner', responsibilities: ['Sign-off'] },
+        ],
+        prerequisitePrograms: ['ssop.handwashing', 'gmp.cleaning_schedule', 'pest_control_contract'],
+        aiSummary: 'HACCP Plan for Chicken Shawarma — 2 CCPs (receiving temp + cook temp), 5 hazards.',
+        aiMetadata: { productCount: 1, hazardCount: 5, ccpCount: 2 },
+      })
+      .returning();
+
+    const hazardSpecs = [
+      { type: 'biological' as const, stage: 'receiving' as const, titleEn: 'Salmonella / Campylobacter in raw chicken', titleAr: 'سالمونيلا / كامبيلوباكتر في الدجاج النيء', agent: 'Salmonella spp., Campylobacter', severity: 5, likelihood: 4, isCcp: true, ref: 'H-01', preventive: ['Approved suppliers only', 'Cold-chain verification on receipt'] },
+      { type: 'biological' as const, stage: 'storage_cold' as const, titleEn: 'Bacterial growth if temperature > 4°C', titleAr: 'نمو بكتيري إذا تجاوزت الحرارة 4°م', agent: 'Various mesophiles', severity: 4, likelihood: 3, isCcp: false, ref: 'H-02', preventive: ['Twice-daily cooler temp checks', 'Preventive maintenance schedule'] },
+      { type: 'biological' as const, stage: 'cooking' as const, titleEn: 'Pathogen survival if cone < 75°C', titleAr: 'بقاء المسببات المرضية إذا كانت درجة قلب المخروط < 75°م', agent: 'Salmonella spp.', severity: 5, likelihood: 3, isCcp: true, ref: 'H-03', preventive: ['Calibrated probe', 'Trained cook'] },
+      { type: 'chemical' as const, stage: 'cleaning' as const, titleEn: 'Sanitizer residue on cutting surface', titleAr: 'بقايا المطهر على أسطح التقطيع', agent: 'Chlorine, quat', severity: 3, likelihood: 2, isCcp: false, ref: 'H-04', preventive: ['Rinse after sanitize', 'Test strip verification'] },
+      { type: 'physical' as const, stage: 'prep' as const, titleEn: 'Foreign object (metal shaving) from slicer', titleAr: 'جسم غريب (شظية معدنية) من المقطعة', agent: 'Metal fragment', severity: 4, likelihood: 1, isCcp: false, ref: 'H-05', preventive: ['Blade condition check daily', 'Metal detector at final packaging'] },
+    ];
+
+    const insertedHazardIds: Record<string, string> = {};
+    for (const h of hazardSpecs) {
+      const riskScore = h.severity * h.likelihood;
+      const [row] = await db
+        .insert(hazards)
+        .values({
+          companyId: company.id,
+          haccpPlanId: plan.id,
+          type: h.type,
+          stage: h.stage,
+          titleAr: h.titleAr,
+          titleEn: h.titleEn,
+          agent: h.agent,
+          severity: h.severity,
+          likelihood: h.likelihood,
+          riskScore,
+          isSignificant: riskScore >= 8,
+          reference: h.ref,
+          preventiveMeasures: h.preventive,
+          isCcp: h.isCcp,
+          aiMetadata: { riskScore, type: h.type, stage: h.stage },
+        })
+        .returning({ id: hazards.id });
+      insertedHazardIds[h.ref] = row.id;
+    }
+
+    // Locate the shawarma asset (may or may not exist depending on seed run order)
+    const [shawarmaAsset] = await db
+      .select({ id: assets.id })
+      .from(assets)
+      .where(and(eq(assets.companyId, company.id), eq(assets.code, 'SHW-01')))
+      .limit(1);
+    const [wicAsset] = await db
+      .select({ id: assets.id })
+      .from(assets)
+      .where(and(eq(assets.companyId, company.id), eq(assets.code, 'WIC-01')))
+      .limit(1);
+
+    await db.insert(ccps).values({
+      companyId: company.id,
+      haccpPlanId: plan.id,
+      assetId: wicAsset?.id ?? null,
+      reference: 'CCP-01',
+      number: 1,
+      titleAr: 'التبريد المستمر لغرفة تبريد الدجاج',
+      titleEn: 'Chicken cold storage temperature',
+      stage: 'storage_cold',
+      description: 'Walk-in cooler must hold raw chicken ≤ 4°C at all times.',
+      hazardIds: [insertedHazardIds['H-01']],
+      criticalLimits: [
+        { metric: 'temp_c', op: 'lte', value: 4, unit: '°C', labelEn: 'Cooler temperature', labelAr: 'حرارة البراد' },
+      ],
+      monitoring: {
+        frequency: 'twice_daily',
+        method: 'probe_thermometer',
+        responsibleRoleKey: 'branch_manager',
+        procedureRef: 'sop.walkin_cooler_temp',
+      },
+      correctiveActionPlaybook: [
+        { step: 'Move product to backup cooler', ownerRoleKey: 'branch_manager', deadlineMinutes: 30 },
+        { step: 'Check gasket / condenser / thermostat', ownerRoleKey: 'operations_director' },
+        { step: 'Log deviation and escalate to Food Safety Officer', ownerRoleKey: 'food_safety_officer' },
+      ],
+      verificationPlan: { frequency: 'weekly', method: 'record_review' },
+    });
+
+    await db.insert(ccps).values({
+      companyId: company.id,
+      haccpPlanId: plan.id,
+      assetId: shawarmaAsset?.id ?? null,
+      reference: 'CCP-02',
+      number: 2,
+      titleAr: 'حرارة قلب مخروط الشاورما',
+      titleEn: 'Shawarma cone core temperature',
+      stage: 'cooking',
+      description: 'Cone core temperature must be ≥75°C during peak service.',
+      hazardIds: [insertedHazardIds['H-03']],
+      criticalLimits: [
+        { metric: 'core_temp_c', op: 'gte', value: 75, unit: '°C', labelEn: 'Core temp', labelAr: 'حرارة القلب' },
+      ],
+      monitoring: {
+        frequency: 'twice_per_service',
+        method: 'probe_thermometer',
+        responsibleRoleKey: 'food_safety_officer',
+        procedureRef: 'sop.shawarma_ccp',
+      },
+      correctiveActionPlaybook: [
+        { step: 'Continue cooking until ≥75°C reached', ownerRoleKey: 'employee' },
+        { step: 'Discard shaved meat produced during deviation', ownerRoleKey: 'supervisor' },
+        { step: 'Log with photo evidence + escalate to FSO', ownerRoleKey: 'food_safety_officer' },
+      ],
+      verificationPlan: { frequency: 'daily', method: 'record_review' },
+    });
+
+    console.log('  ✓ HACCP plan (SHW-001) seeded with 5 hazards and 2 CCPs');
+  }
 
   console.log('\n✅ Seed complete.');
   console.log('   Log in at http://localhost:5173/login with:');

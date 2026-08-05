@@ -26,6 +26,9 @@ import { inspectionsRouter } from './inspections.js';
 import { findingsRouter } from './findings.js';
 // Phase 5 — Knowledge Engine
 import { knowledgeRouter } from './knowledge.js';
+// Phase 6 — HACCP + Food Safety
+import { haccpRouter } from './haccp.js';
+import { foodSafetyRouter } from './food-safety.js';
 
 export const v1Router: Router = Router();
 
@@ -65,3 +68,7 @@ v1Router.use('/findings', findingsRouter);
 
 // Phase 5 — Knowledge Engine
 v1Router.use('/knowledge', knowledgeRouter);
+
+// Phase 6 — HACCP + Food Safety
+v1Router.use('/haccp', haccpRouter);
+v1Router.use('/food-safety', foodSafetyRouter);

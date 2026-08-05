@@ -42,6 +42,15 @@
     "inspections": "التفتيش",
     "findings": "الملاحظات",
     "knowledge": "المعرفة",
+    "haccpPlans": "خطط الهاسب",
+    "ccps": "نقاط التحكم الحرجة",
+    "temperature": "درجات الحرارة",
+    "receiving": "الاستلام",
+    "cleaning": "التنظيف",
+    "pestControl": "مكافحة الآفات",
+    "calibration": "المعايرة",
+    "certifications": "الشهادات",
+    "batches": "الدفعات",
     "compliance": "الامتثال",
     "haccp": "الهاسب",
     "foodSafety": "سلامة الغذاء",
@@ -275,6 +284,41 @@
     "linkedTo": "مرتبط بـ",
     "versionHistory": "سجل الإصدارات",
     "acknowledgement": "يتطلب إقرارًا بالاطلاع"
+  },
+  "haccp": {
+    "title": "الهاسب",
+    "plans": "خطط الهاسب",
+    "hazards": "المخاطر",
+    "ccps": "نقاط التحكم الحرجة",
+    "monitoring": "المراقبة",
+    "verifications": "التحقق",
+    "planStatus": {
+      "draft": "مسودة", "under_review": "قيد المراجعة", "approved": "معتمدة",
+      "active": "نشطة", "superseded": "مستبدلة", "archived": "مؤرشفة"
+    },
+    "hazardType": {
+      "biological": "بيولوجي", "chemical": "كيميائي", "physical": "فيزيائي",
+      "allergen": "مسبب حساسية", "radiological": "إشعاعي"
+    },
+    "monitoringResult": {
+      "in_limit": "ضمن الحد", "warning": "تحذير",
+      "deviation": "انحراف", "critical_deviation": "انحراف حرج"
+    },
+    "recordReading": "تسجيل قراءة",
+    "criticalLimit": "الحد الحرج"
+  },
+  "foodSafety": {
+    "title": "سلامة الغذاء",
+    "temperature": "سجلات الحرارة",
+    "receiving": "فحص الاستلام",
+    "cleaning": "سجلات التنظيف",
+    "pestControl": "مكافحة الآفات",
+    "calibration": "المعايرة",
+    "certifications": "شهادات الموظفين",
+    "batches": "تتبع الدفعات",
+    "newReading": "قراءة جديدة",
+    "newRecord": "سجل جديد",
+    "recall": "استدعاء الدفعة"
   },
   "dashboard": {
     "title": "لوحة التحكم",

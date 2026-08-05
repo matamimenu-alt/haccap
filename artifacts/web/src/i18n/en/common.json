@@ -42,6 +42,15 @@
     "inspections": "Inspections",
     "findings": "Findings",
     "knowledge": "Knowledge",
+    "haccpPlans": "HACCP Plans",
+    "ccps": "CCPs",
+    "temperature": "Temperature",
+    "receiving": "Receiving",
+    "cleaning": "Cleaning",
+    "pestControl": "Pest control",
+    "calibration": "Calibration",
+    "certifications": "Certifications",
+    "batches": "Batches",
     "compliance": "Compliance",
     "haccp": "HACCP",
     "foodSafety": "Food safety",
@@ -275,6 +284,41 @@
     "linkedTo": "Linked to",
     "versionHistory": "Version history",
     "acknowledgement": "Requires acknowledgement"
+  },
+  "haccp": {
+    "title": "HACCP",
+    "plans": "HACCP plans",
+    "hazards": "Hazards",
+    "ccps": "Critical control points",
+    "monitoring": "Monitoring",
+    "verifications": "Verifications",
+    "planStatus": {
+      "draft": "Draft", "under_review": "Under review", "approved": "Approved",
+      "active": "Active", "superseded": "Superseded", "archived": "Archived"
+    },
+    "hazardType": {
+      "biological": "Biological", "chemical": "Chemical", "physical": "Physical",
+      "allergen": "Allergen", "radiological": "Radiological"
+    },
+    "monitoringResult": {
+      "in_limit": "In limit", "warning": "Warning",
+      "deviation": "Deviation", "critical_deviation": "Critical deviation"
+    },
+    "recordReading": "Record reading",
+    "criticalLimit": "Critical limit"
+  },
+  "foodSafety": {
+    "title": "Food safety",
+    "temperature": "Temperature logs",
+    "receiving": "Receiving inspection",
+    "cleaning": "Cleaning records",
+    "pestControl": "Pest control",
+    "calibration": "Calibration",
+    "certifications": "Employee certifications",
+    "batches": "Batch traceability",
+    "newReading": "New reading",
+    "newRecord": "New record",
+    "recall": "Recall batch"
   },
   "dashboard": {
     "title": "Dashboard",

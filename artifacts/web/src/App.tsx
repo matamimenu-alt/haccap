@@ -35,6 +35,18 @@ import { FindingsPage } from '@/pages/inspections/FindingsPage';
 import { KnowledgePage } from '@/pages/knowledge/KnowledgePage';
 import { KnowledgeDetailPage } from '@/pages/knowledge/KnowledgeDetailPage';
 import { KnowledgeNewPage } from '@/pages/knowledge/KnowledgeNewPage';
+// Phase 6 — HACCP + Food Safety
+import { HaccpPlansPage } from '@/pages/haccp/HaccpPlansPage';
+import { HaccpPlanDetailPage } from '@/pages/haccp/HaccpPlanDetailPage';
+import { CcpsPage } from '@/pages/haccp/CcpsPage';
+import { CcpMonitorPage } from '@/pages/haccp/CcpMonitorPage';
+import { TemperaturePage } from '@/pages/food-safety/TemperaturePage';
+import { ReceivingPage } from '@/pages/food-safety/ReceivingPage';
+import { CleaningPage } from '@/pages/food-safety/CleaningPage';
+import { PestControlPage } from '@/pages/food-safety/PestControlPage';
+import { CalibrationPage } from '@/pages/food-safety/CalibrationPage';
+import { CertificationsPage } from '@/pages/food-safety/CertificationsPage';
+import { BatchesPage } from '@/pages/food-safety/BatchesPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -91,6 +103,18 @@ export default function App() {
             <Route path="/knowledge" element={<KnowledgePage />} />
             <Route path="/knowledge/new" element={<KnowledgeNewPage />} />
             <Route path="/knowledge/:id" element={<KnowledgeDetailPage />} />
+            {/* Phase 6 — HACCP + Food Safety */}
+            <Route path="/haccp/plans" element={<HaccpPlansPage />} />
+            <Route path="/haccp/plans/:id" element={<HaccpPlanDetailPage />} />
+            <Route path="/haccp/ccps" element={<CcpsPage />} />
+            <Route path="/haccp/ccps/:id" element={<CcpMonitorPage />} />
+            <Route path="/food-safety/temperature" element={<TemperaturePage />} />
+            <Route path="/food-safety/receiving" element={<ReceivingPage />} />
+            <Route path="/food-safety/cleaning" element={<CleaningPage />} />
+            <Route path="/food-safety/pest-control" element={<PestControlPage />} />
+            <Route path="/food-safety/calibration" element={<CalibrationPage />} />
+            <Route path="/food-safety/certifications" element={<CertificationsPage />} />
+            <Route path="/food-safety/batches" element={<BatchesPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
