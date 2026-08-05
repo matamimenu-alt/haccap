@@ -1,17 +1,10 @@
 import type { NextFunction, Request, Response } from 'express';
 import { errors } from '@rcos/shared';
 import { verifyAccessToken } from '../lib/jwt.js';
-
-declare module 'express-serve-static-core' {
-  interface Request {
-    tenant?: {
-      userId: string;
-      companyId: string;
-      roles: string[];
-      branchIds: string[];
-    };
-  }
-}
+// The `Express.Request.tenant` property assigned below is declared in
+// src/types/express.d.ts, which augments the global Express namespace.
+// Ambient .d.ts files are picked up automatically by the "src/**/*"
+// include glob in tsconfig.json, so no explicit import is required.
 
 export async function requireAuth(req: Request, _res: Response, next: NextFunction) {
   try {
