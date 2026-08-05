@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Building2, Store, MapPin, Users, ShieldCheck,
   Layers3, Landmark, ClipboardList, ThermometerSun, ListTodo,
-  AlertOctagon, FileBarChart2, Settings,
+  AlertOctagon, FileBarChart2, Settings, BookOpen,
   Package, Boxes, Warehouse, Truck, Wrench,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -49,6 +49,7 @@ const sections: NavSection[] = [
     items: [
       { to: '/inspections',        icon: ClipboardList, labelKey: 'nav.inspections' },
       { to: '/findings',           icon: AlertOctagon,   labelKey: 'nav.findings' },
+      { to: '/knowledge',          icon: BookOpen,       labelKey: 'nav.knowledge' },
       { to: '/haccp',      icon: ShieldCheck,    labelKey: 'nav.haccp',      comingSoon: true },
       { to: '/food-safety',icon: ThermometerSun, labelKey: 'nav.foodSafety', comingSoon: true },
       { to: '/reports',    icon: FileBarChart2,  labelKey: 'nav.reports',    comingSoon: true },

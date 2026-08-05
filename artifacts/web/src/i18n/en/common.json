@@ -41,6 +41,7 @@
     "maintenance": "Maintenance",
     "inspections": "Inspections",
     "findings": "Findings",
+    "knowledge": "Knowledge",
     "compliance": "Compliance",
     "haccp": "HACCP",
     "foodSafety": "Food safety",
@@ -245,6 +246,35 @@
     "criticalFailures": "Critical failures",
     "notes": "Notes",
     "verdict": "Verdict"
+  },
+  "knowledge": {
+    "title": "Knowledge base",
+    "add": "New article",
+    "kind": {
+      "sop": "SOP",
+      "policy": "Policy",
+      "guideline": "Guideline",
+      "faq": "FAQ",
+      "reference": "Reference",
+      "training_material": "Training",
+      "procedure": "Procedure",
+      "checklist": "Checklist",
+      "incident_playbook": "Incident playbook",
+      "regulatory_citation": "Regulatory citation",
+      "other": "Other"
+    },
+    "status": {
+      "draft": "Draft",
+      "in_review": "In review",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "publish": "Publish",
+    "archive": "Archive",
+    "references": "References",
+    "linkedTo": "Linked to",
+    "versionHistory": "Version history",
+    "acknowledgement": "Requires acknowledgement"
   },
   "dashboard": {
     "title": "Dashboard",

@@ -253,6 +253,46 @@ export const taskSourceEnum = pgEnum('task_source', [
 ]);
 
 /* ---------------------------------------------------------------
+ * Phase 5 — Knowledge Engine
+ * ------------------------------------------------------------- */
+
+export const knowledgeKindEnum = pgEnum('knowledge_kind', [
+  'sop',
+  'policy',
+  'guideline',
+  'faq',
+  'reference',
+  'training_material',
+  'procedure',
+  'checklist',
+  'incident_playbook',
+  'regulatory_citation',
+  'other',
+]);
+
+export const knowledgeStatusEnum = pgEnum('knowledge_status', [
+  'draft',
+  'in_review',
+  'published',
+  'archived',
+]);
+
+// Where a knowledge article LINKS TO. Overlaps semantically with
+// polymorphic_target_type but is a distinct enum because articles can link
+// to *type-level* things (asset categories, template keys) not just row-level.
+export const knowledgeLinkTargetEnum = pgEnum('knowledge_link_target', [
+  'asset_category',
+  'inspection_template',
+  'task_template',
+  'area_kind',
+  'compliance_framework',
+  'asset',
+  'branch',
+  'supplier',
+  'other',
+]);
+
+/* ---------------------------------------------------------------
  * Phase 4 — Inspection Engine
  * ------------------------------------------------------------- */
 

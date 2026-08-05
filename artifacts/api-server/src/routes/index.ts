@@ -24,6 +24,8 @@ import { jobsRouter } from './jobs.js';
 import { inspectionTemplatesRouter } from './inspection-templates.js';
 import { inspectionsRouter } from './inspections.js';
 import { findingsRouter } from './findings.js';
+// Phase 5 — Knowledge Engine
+import { knowledgeRouter } from './knowledge.js';
 
 export const v1Router: Router = Router();
 
@@ -60,3 +62,6 @@ v1Router.use('/jobs', jobsRouter);
 v1Router.use('/inspection-templates', inspectionTemplatesRouter);
 v1Router.use('/inspections', inspectionsRouter);
 v1Router.use('/findings', findingsRouter);
+
+// Phase 5 — Knowledge Engine
+v1Router.use('/knowledge', knowledgeRouter);

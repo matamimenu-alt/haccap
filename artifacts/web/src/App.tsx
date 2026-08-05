@@ -31,6 +31,10 @@ import { InspectionNewPage } from '@/pages/inspections/InspectionNewPage';
 import { InspectionDetailPage } from '@/pages/inspections/InspectionDetailPage';
 import { InspectionTemplatesPage } from '@/pages/inspections/InspectionTemplatesPage';
 import { FindingsPage } from '@/pages/inspections/FindingsPage';
+// Phase 5 — Knowledge Engine
+import { KnowledgePage } from '@/pages/knowledge/KnowledgePage';
+import { KnowledgeDetailPage } from '@/pages/knowledge/KnowledgeDetailPage';
+import { KnowledgeNewPage } from '@/pages/knowledge/KnowledgeNewPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +87,10 @@ export default function App() {
             <Route path="/inspections/:id" element={<InspectionDetailPage />} />
             <Route path="/inspection-templates" element={<InspectionTemplatesPage />} />
             <Route path="/findings" element={<FindingsPage />} />
+            {/* Phase 5 — Knowledge Engine */}
+            <Route path="/knowledge" element={<KnowledgePage />} />
+            <Route path="/knowledge/new" element={<KnowledgeNewPage />} />
+            <Route path="/knowledge/:id" element={<KnowledgeDetailPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -35,3 +35,8 @@ export * from './inspections.js';
 export * from './inspection-responses.js';
 export * from './findings.js';
 export * from './inspection-events.js';
+// Phase 5 — Knowledge Engine
+export * from './knowledge-categories.js';
+export * from './knowledge-articles.js';
+export * from './knowledge-article-versions.js';
+export * from './knowledge-article-links.js';

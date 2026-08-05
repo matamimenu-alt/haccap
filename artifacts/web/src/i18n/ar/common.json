@@ -41,6 +41,7 @@
     "maintenance": "الصيانة",
     "inspections": "التفتيش",
     "findings": "الملاحظات",
+    "knowledge": "المعرفة",
     "compliance": "الامتثال",
     "haccp": "الهاسب",
     "foodSafety": "سلامة الغذاء",
@@ -245,6 +246,35 @@
     "criticalFailures": "إخفاقات حرجة",
     "notes": "ملاحظات",
     "verdict": "القرار"
+  },
+  "knowledge": {
+    "title": "قاعدة المعرفة",
+    "add": "مقالة جديدة",
+    "kind": {
+      "sop": "إجراء تشغيلي",
+      "policy": "سياسة",
+      "guideline": "دليل إرشادي",
+      "faq": "أسئلة شائعة",
+      "reference": "مرجع",
+      "training_material": "مادة تدريبية",
+      "procedure": "إجراء",
+      "checklist": "قائمة تحقق",
+      "incident_playbook": "سيناريو حادث",
+      "regulatory_citation": "استشهاد تنظيمي",
+      "other": "أخرى"
+    },
+    "status": {
+      "draft": "مسودة",
+      "in_review": "قيد المراجعة",
+      "published": "منشورة",
+      "archived": "مؤرشفة"
+    },
+    "publish": "نشر",
+    "archive": "أرشفة",
+    "references": "المراجع",
+    "linkedTo": "مرتبط بـ",
+    "versionHistory": "سجل الإصدارات",
+    "acknowledgement": "يتطلب إقرارًا بالاطلاع"
   },
   "dashboard": {
     "title": "لوحة التحكم",

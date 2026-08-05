@@ -23,6 +23,8 @@ import {
   taskTemplates,
   // Phase 4
   inspectionTemplates,
+  // Phase 5
+  knowledgeArticles, knowledgeArticleLinks, knowledgeArticleVersions, knowledgeCategories,
 } from './schema/index.js';
 import { SYSTEM_ROLES, PERMISSIONS, ROLE_DEFAULT_PERMISSIONS } from '@rcos/shared';
 
@@ -698,6 +700,321 @@ async function seed() {
       .onConflictDoNothing({ target: [inspectionTemplates.companyId, inspectionTemplates.key, inspectionTemplates.version] });
   }
   console.log(`  ✓ ${inspectionTemplateSpecs.length} inspection templates seeded`);
+
+  /* -------------------------------------------------------------
+   * Phase 5 — Knowledge Engine seed
+   * ----------------------------------------------------------- */
+  console.log('\n🌱 Seeding Knowledge Engine…');
+
+  const knowledgeCategorySpecs = [
+    { key: 'food_safety',      nameAr: 'سلامة الغذاء',     nameEn: 'Food Safety',      parent: null },
+    { key: 'food_safety.haccp',nameAr: 'الهاسب',           nameEn: 'HACCP',            parent: 'food_safety' },
+    { key: 'food_safety.ssop', nameAr: 'إجراءات النظافة',   nameEn: 'SSOP',             parent: 'food_safety' },
+    { key: 'food_safety.gmp',  nameAr: 'ممارسات التصنيع',  nameEn: 'GMP',              parent: 'food_safety' },
+    { key: 'food_safety.ghp',  nameAr: 'ممارسات النظافة',  nameEn: 'GHP',              parent: 'food_safety' },
+    { key: 'operations',       nameAr: 'العمليات',         nameEn: 'Operations',       parent: null },
+    { key: 'operations.cleaning', nameAr: 'التنظيف والتعقيم', nameEn: 'Cleaning & Sanitation', parent: 'operations' },
+    { key: 'operations.pest',    nameAr: 'مكافحة الآفات',    nameEn: 'Pest Control',        parent: 'operations' },
+    { key: 'safety',           nameAr: 'السلامة',           nameEn: 'Safety',           parent: null },
+    { key: 'safety.fire',      nameAr: 'إطفاء الحريق',      nameEn: 'Fire Safety',      parent: 'safety' },
+    { key: 'regulatory',       nameAr: 'التنظيمي',           nameEn: 'Regulatory',       parent: null },
+    { key: 'regulatory.municipality', nameAr: 'البلدية', nameEn: 'Municipality', parent: 'regulatory' },
+    { key: 'regulatory.sfda',  nameAr: 'الغذاء والدواء',    nameEn: 'SFDA',             parent: 'regulatory' },
+    { key: 'training',         nameAr: 'التدريب',           nameEn: 'Training',         parent: null },
+  ];
+  const knCatByKey = new Map<string, { id: string; path: string }>();
+  for (const spec of knowledgeCategorySpecs) {
+    const [existing] = await db
+      .select({ id: knowledgeCategories.id, path: knowledgeCategories.path })
+      .from(knowledgeCategories)
+      .where(and(eq(knowledgeCategories.companyId, company.id), eq(knowledgeCategories.key, spec.key)))
+      .limit(1);
+    if (existing) {
+      knCatByKey.set(spec.key, existing);
+      continue;
+    }
+    const parent = spec.parent ? knCatByKey.get(spec.parent) : null;
+    const path = parent ? `${parent.path}/${spec.key.split('.').pop()}` : spec.key;
+    const depth = parent ? path.split('/').length - 1 : 0;
+    const [created] = await db
+      .insert(knowledgeCategories)
+      .values({
+        companyId: company.id,
+        parentId: parent?.id ?? null,
+        key: spec.key,
+        nameAr: spec.nameAr,
+        nameEn: spec.nameEn,
+        path,
+        depth,
+        isSystem: false,
+      })
+      .returning({ id: knowledgeCategories.id, path: knowledgeCategories.path });
+    knCatByKey.set(spec.key, created);
+  }
+  console.log(`  ✓ ${knowledgeCategorySpecs.length} knowledge categories seeded`);
+
+  const knArticleSpecs = [
+    {
+      key: 'sop.walkin_cooler_temp',
+      categoryKey: 'food_safety.haccp',
+      kind: 'sop' as const,
+      titleAr: 'إجراءات مراقبة درجة حرارة غرفة التبريد',
+      titleEn: 'Walk-in Cooler Temperature Monitoring SOP',
+      summaryEn: 'Check walk-in cooler temperature (0–4°C) twice daily and log the reading.',
+      summaryAr: 'قِس درجة حرارة غرفة التبريد (0–4°م) مرتين يومياً وسجّل القراءة.',
+      bodyMd: `# Walk-in Cooler Temperature Monitoring
+
+## Frequency
+Twice daily — morning (before opening) and afternoon (2 pm).
+
+## Steps
+1. Open the cooler and let temperature stabilize for 30 seconds.
+2. Read the built-in thermometer at eye level.
+3. Cross-check with a calibrated hand thermometer at the middle shelf.
+4. Log the reading in RCOS under the CCP monitoring task.
+
+## Critical Limits
+- **Target**: 0–4°C
+- **Action level**: > 5°C → immediate corrective action
+
+## Corrective Actions
+If reading > 5°C:
+1. Move perishable items to the backup cooler.
+2. Check gasket seal, condenser fan, thermostat setting.
+3. Escalate to Branch Manager and Food Safety Officer.
+4. Log the incident in the CCP monitoring form and create an inspection follow-up task.`,
+      tags: ['haccp', 'ccp', 'temperature', 'walk-in cooler'],
+      references: [
+        { authority: 'HACCP', ref: 'Codex Alimentarius CAC/RCP 1-1969', note: 'Principle 3: Establish critical limits' },
+        { authority: 'SFDA', ref: 'GSO 993:2015', note: 'Food safety storage requirements' },
+      ],
+      links: [
+        { targetType: 'asset_category' as const, targetRef: 'refrigeration.walk_in_cooler', label: 'Walk-in Cooler category' },
+        { targetType: 'inspection_template' as const, targetRef: 'municipality_kitchen_v1', label: 'Municipality Kitchen Inspection' },
+        { targetType: 'task_template' as const, targetRef: 'walkin_cooler_monthly', label: 'Monthly maintenance' },
+        { targetType: 'compliance_framework' as const, targetRef: 'haccp', label: 'HACCP framework' },
+      ],
+    },
+    {
+      key: 'sop.shawarma_ccp',
+      categoryKey: 'food_safety.haccp',
+      kind: 'sop' as const,
+      titleAr: 'مراقبة نقطة التحكم الحرجة للشاورما',
+      titleEn: 'Shawarma CCP Monitoring SOP',
+      summaryEn: 'Verify shawarma cone core temperature ≥75°C during peak service.',
+      summaryAr: 'تحقّق من درجة حرارة قلب مخروط الشاورما (≥75°م) خلال الذروة.',
+      bodyMd: `# Shawarma CCP — Cone Core Temperature
+
+Cone core temperature must reach **≥75°C** for at least 15 seconds during service. This is a **critical control point** for pathogen kill-step (Salmonella, Campylobacter).
+
+## Monitoring
+- Insert calibrated probe into the thickest part of the cone.
+- Record twice: at start of lunch service (12:00) and dinner service (18:00).
+
+## Critical Limit
+- ≥75°C internal temperature
+
+## Deviations
+Any reading <75°C triggers:
+1. Continue cooking until target is reached.
+2. Move shaved meat off the cone until it is safe.
+3. Log the deviation with photo of thermometer reading.
+4. Create a critical CAPA task and escalate to Food Safety Officer.`,
+      tags: ['haccp', 'ccp', 'shawarma', 'critical'],
+      references: [
+        { authority: 'SFDA', ref: 'SFDA-FD-020', note: 'Poultry cooking temperatures' },
+        { authority: 'HACCP', ref: 'Codex Alimentarius CAC/RCP 1-1969', note: 'Principle 4: Establish monitoring' },
+      ],
+      links: [
+        { targetType: 'asset_category' as const, targetRef: 'cooking.shawarma_machine', label: 'Shawarma Machine category' },
+        { targetType: 'task_template' as const, targetRef: 'shawarma_ccp_daily', label: 'Daily CCP task' },
+        { targetType: 'compliance_framework' as const, targetRef: 'haccp', label: 'HACCP framework' },
+      ],
+    },
+    {
+      key: 'ssop.handwashing',
+      categoryKey: 'food_safety.ssop',
+      kind: 'sop' as const,
+      titleAr: 'إجراء غسل الأيدي',
+      titleEn: 'Handwashing SSOP',
+      summaryEn: 'Correct 20-second handwashing procedure per SFDA guidance.',
+      summaryAr: 'إجراء غسل الأيدي الصحيح (20 ثانية) وفق دليل الغذاء والدواء.',
+      bodyMd: `# Handwashing
+
+## When
+- Before starting any task
+- After using restroom
+- After handling raw meat/poultry/seafood
+- After coughing/sneezing/eating/smoking
+
+## How (20 seconds minimum)
+1. Wet hands with warm running water
+2. Apply soap and lather to wrists
+3. Scrub between fingers and under nails
+4. Rinse
+5. Dry with single-use paper towel
+
+## Verification
+Random visual observation by supervisor daily.`,
+      tags: ['ssop', 'hygiene', 'training'],
+      references: [
+        { authority: 'SFDA', ref: 'Personal Hygiene Guide 2023' },
+      ],
+      links: [
+        { targetType: 'area_kind' as const, targetRef: 'kitchen', label: 'All kitchen areas' },
+        { targetType: 'compliance_framework' as const, targetRef: 'haccp', label: 'HACCP prerequisite program' },
+      ],
+    },
+    {
+      key: 'gmp.cleaning_schedule',
+      categoryKey: 'operations.cleaning',
+      kind: 'procedure' as const,
+      titleAr: 'جدول التنظيف والتعقيم',
+      titleEn: 'Cleaning & Sanitation Master Schedule',
+      summaryEn: 'Daily / weekly / monthly cleaning tasks across all kitchen zones.',
+      summaryAr: 'مهام التنظيف اليومية والأسبوعية والشهرية عبر جميع مناطق المطبخ.',
+      bodyMd: `# Master Cleaning Schedule
+
+## Daily
+- Cook line surfaces after every service
+- Slicer, mixer disassembly and sanitize
+- Floor drains flush
+- Three-compartment sink refill sanitizer every 2h
+
+## Weekly
+- Deep clean walk-in cooler shelves
+- Hood filters
+- Ice machine (if daily count high)
+
+## Monthly
+- Behind and under equipment
+- Vent hood chemical clean by certified vendor
+
+## Verification
+Supervisor signs off; weekly ATP swab spot-check by QA.`,
+      tags: ['gmp', 'cleaning', 'sanitation'],
+      references: [
+        { authority: 'SFDA', ref: 'GSO 1016:2015' },
+      ],
+      links: [
+        { targetType: 'compliance_framework' as const, targetRef: 'municipality', label: 'Municipality' },
+        { targetType: 'inspection_template' as const, targetRef: 'municipality_kitchen_v1', label: 'Municipality Kitchen Inspection' },
+      ],
+    },
+    {
+      key: 'policy.medical_certificates',
+      categoryKey: 'food_safety',
+      kind: 'policy' as const,
+      titleAr: 'سياسة الشهادات الصحية للعاملين',
+      titleEn: 'Employee Medical Certificates Policy',
+      summaryEn: 'All food handlers must maintain a valid Saudi health card (renewed annually).',
+      summaryAr: 'يجب على جميع العاملين في مناولة الأغذية الحصول على بطاقة صحية سارية (تُجدد سنوياً).',
+      bodyMd: `# Medical Certificates
+
+All food handlers must possess a valid Saudi health card at all times while on premise.
+
+## Renewal
+- Annual re-issue via approved medical center
+- HR maintains centralized copies
+- Expiry ≤30 days triggers a task for HR to schedule renewal
+
+## Enforcement
+Working without valid card is grounds for immediate suspension from food-handling duties.`,
+      tags: ['policy', 'hygiene', 'compliance', 'sfda'],
+      references: [{ authority: 'SFDA', ref: 'Personal Hygiene Guide 2023, §4' }],
+      links: [
+        { targetType: 'compliance_framework' as const, targetRef: 'sfda', label: 'SFDA' },
+        { targetType: 'compliance_framework' as const, targetRef: 'municipality', label: 'Municipality' },
+      ],
+      requiresAcknowledgement: true,
+    },
+    {
+      key: 'training.pest_awareness',
+      categoryKey: 'training',
+      kind: 'training_material' as const,
+      titleAr: 'مادة تدريبية: الوعي بمكافحة الآفات',
+      titleEn: 'Training: Pest Awareness',
+      summaryEn: 'Signs of pests, reporting flow, and prevention basics.',
+      summaryAr: 'علامات وجود الآفات، وسير التبليغ، وأساسيات الوقاية.',
+      bodyMd: `# Pest Awareness Training
+
+## What to look for
+- Droppings near dry storage
+- Grease trails along walls
+- Live insects near drains, sinks
+- Chewed packaging
+
+## Report immediately
+Any sighting → create a critical incident task and notify the Food Safety Officer within 30 min.
+
+## Prevention basics
+- Doors and windows sealed and screened
+- No food left uncovered overnight
+- Empty grease traps weekly
+- Follow the cleaning master schedule`,
+      tags: ['training', 'pest', 'awareness'],
+      references: [],
+      links: [
+        { targetType: 'asset_category' as const, targetRef: 'pest_control', label: 'Pest control' },
+      ],
+    },
+  ];
+
+  for (const spec of knArticleSpecs) {
+    const [existing] = await db
+      .select({ id: knowledgeArticles.id })
+      .from(knowledgeArticles)
+      .where(and(eq(knowledgeArticles.companyId, company.id), eq(knowledgeArticles.key, spec.key)))
+      .limit(1);
+    if (existing) continue;
+
+    const cat = knCatByKey.get(spec.categoryKey);
+    const searchText = [spec.titleEn, spec.titleAr, spec.summaryEn, spec.summaryAr, spec.bodyMd, spec.tags.join(' ')].join(' ').toLowerCase();
+
+    const [article] = await db
+      .insert(knowledgeArticles)
+      .values({
+        companyId: company.id,
+        categoryId: cat?.id ?? null,
+        key: spec.key,
+        kind: spec.kind,
+        status: 'published',
+        titleAr: spec.titleAr,
+        titleEn: spec.titleEn,
+        summaryAr: spec.summaryAr,
+        summaryEn: spec.summaryEn,
+        bodyMd: spec.bodyMd,
+        tags: spec.tags,
+        references: spec.references,
+        requiresAcknowledgement: 'requiresAcknowledgement' in spec ? spec.requiresAcknowledgement : false,
+        searchText,
+        aiSummary: spec.summaryEn,
+        aiMetadata: { kind: spec.kind, tags: spec.tags, referencesCount: spec.references.length, categoryKey: spec.categoryKey },
+        publishedAt: new Date(),
+      })
+      .returning({ id: knowledgeArticles.id });
+
+    await db.insert(knowledgeArticleVersions).values({
+      companyId: company.id,
+      articleId: article.id,
+      version: 1,
+      titleAr: spec.titleAr,
+      titleEn: spec.titleEn,
+      bodyMd: spec.bodyMd,
+      changelog: 'Initial version (seed)',
+    });
+
+    for (const link of spec.links) {
+      await db.insert(knowledgeArticleLinks).values({
+        companyId: company.id,
+        articleId: article.id,
+        targetType: link.targetType,
+        targetRef: link.targetRef,
+        label: link.label,
+      }).onConflictDoNothing();
+    }
+  }
+  console.log(`  ✓ ${knArticleSpecs.length} knowledge articles seeded (published)`);
 
   console.log('\n✅ Seed complete.');
   console.log('   Log in at http://localhost:5173/login with:');

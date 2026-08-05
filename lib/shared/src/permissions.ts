@@ -63,6 +63,12 @@ export const PERMISSIONS = {
   inspections_finalize:       { key: 'inspections:finalize',       module: 'inspections', action: 'finalize' },
   findings_read:              { key: 'findings:read',              module: 'inspections', action: 'read' },
   findings_write:             { key: 'findings:write',             module: 'inspections', action: 'write' },
+
+  // Phase 5 — Knowledge Engine
+  knowledge_read:             { key: 'knowledge:read',             module: 'knowledge', action: 'read' },
+  knowledge_write:            { key: 'knowledge:write',            module: 'knowledge', action: 'write' },
+  knowledge_publish:          { key: 'knowledge:publish',          module: 'knowledge', action: 'publish' },
+  knowledge_categories_write: { key: 'knowledge_categories:write', module: 'knowledge', action: 'write' },
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]['key'];
@@ -99,6 +105,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'inspection_templates:read', 'inspection_templates:write',
     'inspections:read', 'inspections:write', 'inspections:conduct', 'inspections:finalize',
     'findings:read', 'findings:write',
+    'knowledge:read', 'knowledge:write', 'knowledge:publish', 'knowledge_categories:write',
   ],
   area_manager: [
     'companies:read', 'brands:read', 'branches:read', 'branches:write',
@@ -120,6 +127,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'inspection_templates:read',
     'inspections:read', 'inspections:conduct',
     'findings:read', 'findings:write',
+    'knowledge:read',
   ],
   branch_manager: [
     'companies:read', 'brands:read', 'branches:read',
@@ -141,6 +149,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'inspection_templates:read',
     'inspections:read', 'inspections:conduct',
     'findings:read', 'findings:write',
+    'knowledge:read',
   ],
   food_safety_officer: [
     'branches:read', 'users:read',
@@ -158,6 +167,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'inspection_templates:read', 'inspection_templates:write',
     'inspections:read', 'inspections:write', 'inspections:conduct', 'inspections:finalize',
     'findings:read', 'findings:write',
+    'knowledge:read', 'knowledge:write', 'knowledge:publish', 'knowledge_categories:write',
   ],
   internal_auditor: [
     'companies:read', 'brands:read', 'branches:read', 'users:read',
@@ -170,6 +180,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'inspection_templates:read',
     'inspections:read', 'inspections:conduct', 'inspections:finalize',
     'findings:read',
+    'knowledge:read', 'knowledge:write',
   ],
   supervisor: [
     'branches:read', 'users:read',
@@ -186,9 +197,11 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, PermissionKey[]> = {
     'inspection_templates:read',
     'inspections:read', 'inspections:conduct',
     'findings:read',
+    'knowledge:read',
   ],
   employee: [
     'branches:read', 'areas:read', 'assets:read', 'qr:scan',
     'tasks:read', 'tasks:transition', 'tasks:comment', 'tasks:time',
+    'knowledge:read',
   ],
 };
